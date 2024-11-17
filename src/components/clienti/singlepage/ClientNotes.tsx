@@ -16,6 +16,7 @@ import { MdOutlineModeEditOutline } from "react-icons/md";
 import { useClientPage } from "../useClientPage";
 import { CardTitle } from "./CardTitle";
 import { models } from "@types";
+import { Wrapper } from "./Wrapper";
 export default function ClientNotes({
   notes,
   clientId,
@@ -28,7 +29,7 @@ export default function ClientNotes({
   const { addNote, updateNote, deleteNote } = useClientPage();
   return (
     <>
-      <div className="border border-blux-50 rounded-2xl mt-5">
+      <Wrapper>
         <CardTitle>
           Note{" "}
           <Button
@@ -94,7 +95,7 @@ export default function ClientNotes({
             </AccordionItem>
           </Accordion>
         ))}
-      </div>
+      </Wrapper>
       <div className="min-h-2 h-2"></div>
     </>
   );

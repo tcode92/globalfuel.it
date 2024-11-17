@@ -7,7 +7,7 @@ import { db } from "../../database/db";
 import { genRefreshTokenVersion, sign, verify } from "../../lib/jwt";
 import { hashPassword, verifyPassword } from "../../lib/password";
 import { invalidateTokenVersion } from "../../lib/redis";
-import { KnownError } from "../../utils/error";
+import { KnownError, RedirectError } from "../../utils/error";
 
 export const authLoginService = async (data: AuthLoginInput) => {
   const user = await db.auth.getByEmail(data.email);
@@ -75,7 +75,7 @@ export const authResetPasswordExternalService = async (
   const authId = payload.id;
   const auth = await db.auth.getById(authId);
   if (!auth) {
-    return new KnownError("AuthNotFound", "error", 401); // TODO: return a redirect error.
+    return new RedirectError(`/reimposta-password`);
   }
   const password = await hashPassword(data.password);
   const newTokenVersion = genRefreshTokenVersion(auth.rv ?? undefined);

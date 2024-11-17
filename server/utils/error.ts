@@ -2,6 +2,7 @@ import { FastifyReply } from "fastify";
 import { ZodError } from "zod";
 type ZodErrorRecordString = Record<string, string>;
 type ZodErrorRecord = Record<string, string | ZodErrorRecordString>;
+
 function getZodErrorFieldsFromZodError(e: ZodError) {
   let errorsObj: ZodErrorRecord = {};
   for (const issue of e.issues) {
@@ -37,7 +38,7 @@ export function prettyError(e: ZodError) {
 }
 
 export class KnownError extends Error {
-  errorMessage: string | string[] | undefined;
+  errorMessage: string | string[];
   timeout: number | undefined;
   type: "warn" | "error";
   statusCode: number;
@@ -47,7 +48,7 @@ export class KnownError extends Error {
     statusCode: number = 500
   ) {
     super();
-    this.errorMessage = msg;
+    this.errorMessage = msg ?? "Errore sconosciuto.";
     this.name = "KNOWN_ERR";
     this.statusCode = statusCode;
     this.type = type;
@@ -71,18 +72,47 @@ export class RedirectError extends Error {
   }
 }
 
-export const fastifyErrorHandler = (
+export const handleError = (
   res: FastifyReply,
   error: KnownError | CriticalError | RedirectError
 ) => {
-  switch (error.name) {
-    case "REDIRECT_ERR":
-    case "CRITICAL_ERR":
-    case "KNOWN_ERR":
-    case "ZodError":
-    default: {
-    }
+  if (isRedirectError(error)) {
+    return res.redirect(error.url, error.statusCode);
   }
-  res.status(500).send("Internal server error");
-  return;
+
+  if (isKnownError(error)) {
+    // return the response to the user
+    return res.status(error.statusCode).send({
+      error: {
+        message: error.errorMessage ?? "Errore interno.",
+        type: error.type,
+        timeout: error.timeout || 5000,
+      },
+    });
+  }
+  if (isZodError(error)) {
+    // let fastify error handler handle this
+    throw error;
+  }
+  if (isCriticalError(error)) {
+    // Let fastify handle the critical error so we recive notifications
+    throw error;
+  }
+
+  return res.status(500).send("Errore interno.");
 };
+
+function isRedirectError(error: any): error is RedirectError {
+  return error?.name === "REDIRECT_ERR";
+}
+
+function isCriticalError(error: any): error is CriticalError {
+  return error?.name === "CRITICAL_ERR";
+}
+
+function isKnownError(error: any): error is KnownError {
+  return error?.name === "KNOWN_ERR";
+}
+function isZodError(error: any): error is ZodError {
+  return error?.name === "ZodError";
+}

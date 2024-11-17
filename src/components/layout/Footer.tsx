@@ -10,7 +10,7 @@ export default function Footer() {
       <div className=" flex items-center justify-between flex-col md:flex-row gap-4">
         <div className="text-center md:text-left">
           <p>Petrol Service srl</p>
-          <p>Via Roma 1, 89013 Gioia Tauro (RC)</p>
+          <p>Via Roma 9 Galleria del corso, 89013 Gioia Tauro (RC)</p>
           <p>Backoffice: 3276125718</p>
           <p>Agente Francesco Piccolo: 3486819776</p>
         </div>
@@ -58,7 +58,7 @@ export default function Footer() {
           </div> */}
         </div>
       </div>
-      <div className="text-center mt-4">&copy; petrolservice.it 2024</div>
+      <div className="text-center mt-4">&copy; globalfuel.it 2024</div>
     </footer>
   );
 }

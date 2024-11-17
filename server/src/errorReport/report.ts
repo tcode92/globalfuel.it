@@ -5,11 +5,14 @@ export async function errorReportHandler(
   replay: FastifyReply
 ) {
   req.log.error(req.body);
-  // TODO: Save errors somewhere.
-  /* .error({
-    error: req.body,
-    maybeuser: req.cookies,
-    headers: req.headers,
-  }); */
+
+  req.log.error(
+    {
+      error: req.body,
+      maybeuser: req.cookies,
+      headers: req.headers,
+    },
+    "CLIENT SIDE ERROR"
+  );
   replay.send("OK");
 }

@@ -6,7 +6,6 @@ import {
 } from "./handlers";
 
 const route: FastifyPluginAsync = async (api, opts) => {
-  //TODO api.get("/", );
   api.post("/:clientId", noteCreateHandler);
   api.put("/:noteId", noteUpdateHandler);
   api.delete("/:noteId", noteDeleteHandler);

@@ -121,19 +121,23 @@ export namespace models {
     export type Message = {
       id: number;
       sender: string | null;
-      agency_id: number;
+      agency_id: number | null;
       client: string;
       client_id: number;
       message: string;
       created_at: string;
       ack: boolean | null;
     };
-    export type MessagePagination = {
+    /* export type MessagePagination = {
       list: Message[];
       totalPages: number;
       currentPage: number;
       hasNext: boolean;
       hasPrev: boolean;
+    }; */
+    export type MessagePagination = {
+      list: models.message.Message[];
+      hasMore: boolean;
     };
   }
   export namespace note {

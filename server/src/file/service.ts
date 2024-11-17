@@ -1,6 +1,7 @@
 import { unlink } from "fs/promises";
 import { db } from "../../database/db";
 import path from "path";
+import { logger } from "../../lib/log";
 
 export const fileDeleteService = async (fileId: number) => {
   const src = await db.file.del(fileId);
@@ -12,7 +13,7 @@ export const fileDeleteService = async (fileId: number) => {
   try {
     await unlink(path.join(process.cwd(), src));
   } catch (e) {
-    // TODO: log error
+    logger.error(e, "ERROR DELETING FILE");
   }
   return "OK" as const;
 };

@@ -39,6 +39,7 @@ import { sendMessage } from "../sharedDialogs/NewMessageDialog";
 import { ClientState, ClientType, ROLES } from "@constants";
 import { models } from "@types";
 import { MessageIcon } from "../icons/MesageIcon";
+import { openMessages } from "../messages/MessageModal";
 type UpdateFn = <K extends "types" | "states">(
   key: K,
   // key to increment
@@ -418,7 +419,8 @@ function SendMessage({ id, name }: { id: number; name: string }) {
     <DropdownMenuItem
       className="text-blux-600 font-medium focus:text-blux-600"
       onClick={() => {
-        sendMessage(id, name);
+        //sendMessage(id, name);
+        openMessages(id, name);
       }}
     >
       <span className="mr-2">

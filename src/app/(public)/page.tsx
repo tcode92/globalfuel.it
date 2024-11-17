@@ -1,3 +1,4 @@
+import { HighLightElement } from "@/components/customComponents/HighlightElement";
 import { CardForm } from "@/components/forms/ExternalCardForm";
 import { HomePageImg } from "@/components/layout/Header";
 import { Metadata } from "next";
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 };
 const HomePage = () => {
   return (
-    <>
+    <main className="px-4 max-w-[934px] mx-auto">
       <div
         className={
           "mx-auto mt-14 h-[350px] px-4 flex items-center justify-center"
@@ -37,12 +38,12 @@ const HomePage = () => {
           RICHIEDI CARTA
         </Link>
       </div>
-      <h1 className="text-center text-4xl mt-11 text-blux-600 font-semibold px-6 max-[443px]:text-4xl">
+      <h1 className="text-4xl font-bold bg-gradient-to-r from-blux to-orangex bg-clip-text text-transparent text-center mt-11 text-blux-600 px-6 max-[443px]:text-4xl">
         CARTA CARBURANTE IP PLUS
       </h1>
-      <section className="flex items-center mt-11 flex-col w-full mx-auto max-w-[934px]">
+      <section className="flex items-center mt-11 flex-col w-full mx-auto">
         <div className="text-3xl font-semibold text-blux-700">Perchè noi?</div>
-        <div className="flex mx-auto mt-11 gap-4 flex-wrap justify-center px-4 items-stretch">
+        <ul className="flex mx-auto mt-11 gap-4 flex-wrap justify-center items-stretch">
           <HighLightElement
             Icon={LiaFileContractSolid}
             title="Flessibilità contrattuale"
@@ -59,36 +60,22 @@ const HomePage = () => {
             title="Sicurezza negli acquisti"
             text="Tramite PIN code, PIN autista e PIN dinamici"
           />
-        </div>
+        </ul>
       </section>
-
-      <div
-        className="w-[100%] mb-24 pt-24 mx-auto flex justify-center px-4"
+      <section
+        className="flex items-center my-12 flex-col bg-white w-full p-4 rounded-md shadow-md mx-auto justify-center"
         id="req-card"
       >
-        <div className="w-[100%] max-w-[900px] bg-white p-5 shadow-lg rounded-2xl px-6 flex items-center flex-col">
-          <CardForm />
-        </div>
-      </div>
-    </>
+        <h2 className="text-4xl font-bold bg-gradient-to-r from-blux to-orangex bg-clip-text text-transparent max-w-4xl text-center mt-4">
+          Inserisci i dati per richiedere la tua carta carburante.
+        </h2>
+        <p className="mb-6 mt-4">
+          I campi contrassegnati con <span className="font-bold">*</span> sono
+          obbligatori.
+        </p>
+        <CardForm />
+      </section>
+    </main>
   );
 };
 export default HomePage;
-
-const HighLightElement = ({
-  Icon,
-  title,
-  text,
-}: {
-  Icon: IconType;
-  title: string;
-  text: string;
-}) => {
-  return (
-    <div className="flex flex-col items-center gap-3  p-4 rounded-md shadow-lg bg-blux-700 flex-1">
-      <Icon className="w-12 h-12  text-orangex-300 " />
-      <p className="font-semibold text-white ">{title}</p>
-      <p className="text-white text-center">{text}</p>
-    </div>
-  );
-};

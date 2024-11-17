@@ -74,7 +74,7 @@ export default function StatsChart({ data }: { data?: StatsChartData }) {
                     outline: "none !important",
                   }}
                   key={item.state}
-                  fill={LabelColor[item.state] as unknown as string} // TODO: FIXME:
+                  fill={LabelColor[item.state]}
                   name={item.state}
                 />
               ))}

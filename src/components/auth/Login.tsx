@@ -30,23 +30,11 @@ export default function Login({ onLoggedIn }: { onLoggedIn?: () => void }) {
     if (loading) return;
     loading = true;
     const body = getFormDataFromEvent<{ email: string; password: string }>(e);
-    const { success, data, error } = await auth.login(body).request;
+    const { success, error } = await auth.login(body).request;
     if (success) {
-      /* setAuth({
-        id: data.id,
-        name: data.name,
-        role: data.role,
-      });
-      if (data.resetPassword) {
-        resetPasswordDialog(undefined, true);
-      } */
       if (onLoggedIn) onLoggedIn();
     } else {
-      if (typeof data?.error?.message === "string") {
-        setErrors((prev) => ({ ...prev, all: data.error.message.toString() }));
-      } else {
-        error.display();
-      }
+      error.display();
     }
     loading = undefined;
   }
@@ -82,7 +70,7 @@ export default function Login({ onLoggedIn }: { onLoggedIn?: () => void }) {
               <Label>Password</Label>
               <InputPassword
                 name="password"
-                defaultValue={"Password123@"}
+                defaultValue={"Password123"}
                 id="password"
                 autoComplete="current-password"
               />

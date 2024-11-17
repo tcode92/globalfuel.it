@@ -1,11 +1,12 @@
+import DialogUiContainer from "@/components/layout/DialogUiContainer";
 import { LoggedInHeader } from "@/components/layout/Header";
+import { getSession } from "@/lib/auth";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../globals.css";
 import "../style.css";
 import { WithSession } from "./session";
-import DialogUiContainer from "@/components/layout/DialogUiContainer";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { getSession } from "@/lib/auth";
+import { MessagesModal } from "@/components/messages/MessageModal";
 export default async function RootLayout({
   children,
 }: {

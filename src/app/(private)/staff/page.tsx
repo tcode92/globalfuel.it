@@ -44,7 +44,7 @@ export default function StaffPage() {
       <Head>
         <title>Staff</title>
       </Head>
-      <div className="flex items-center justify-end">
+      <div className="flex items-center mt-4 justify-end">
         <Button
           onClick={async () => {
             const result = await createUpdateStaff();
@@ -53,7 +53,7 @@ export default function StaffPage() {
             }
           }}
           className="mb-4 flex gap-2"
-          variant={"orange"}
+          variant={"blue"}
         >
           <PlusIcon />
           Nuovo utente

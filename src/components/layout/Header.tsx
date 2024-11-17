@@ -6,7 +6,7 @@ import logo from "@public/logo.png";
 import logo2 from "@public/logo2.png";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { redirect, RedirectType, useRouter } from "next/navigation";
 import { useRef } from "react";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import { RiShutDownLine } from "react-icons/ri";
@@ -29,10 +29,9 @@ const headerStyle =
 
 export function LoggedInHeader() {
   const { auth } = useAuthStore();
-  const router = useRouter();
   return (
     <header className={cn(headerStyle, "shadow-md")}>
-      <div className="max-w-5xl flex items-center justify-between m-auto">
+      <div className="max-w-7xl flex items-center justify-between m-auto px-2">
         <Link href="/dashboard">
           <Avatar className="p-2 size-14">
             <Image src={logo} alt="Logo" />
@@ -70,7 +69,8 @@ export function LoggedInHeader() {
                 className="text-red-600 focus:text-red-600"
                 onClick={async () => {
                   await authApi.logout().request;
-                  clearStores(); // clearing the store will trigger the withSession wrapper to redirect to login
+                  clearStores();
+                  redirect("/", RedirectType.replace);
                   return;
                 }}
               >

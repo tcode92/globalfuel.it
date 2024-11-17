@@ -1,9 +1,6 @@
 import { db } from "../../database/db";
 import { KnownError } from "../../utils/error";
-import {
-  MessageCreateInput,
-  MessageSearchFilters,
-} from "../../../shared/validation/message";
+import { MessageCreateInput } from "@validation/message";
 import { ROLES } from "@constants";
 
 export const messageAckService = async (
@@ -38,13 +35,22 @@ export const messageCreateService = async (
   return result;
 };
 
-export type MessagePaginationResponse = Awaited<ReturnType<typeof messageGetService>>
+export type MessagePaginationResponse = Awaited<
+  ReturnType<typeof messageGetService>
+>;
 export const messageGetService = async (
+  clientId: number,
   authId: number,
   authRole: ROLES,
-  query: MessageSearchFilters
+  skip?: number
 ) => {
-  const msgs = await db.message.get(authId, authRole, query);
+  const msgs = await db.message.getClientMessages(
+    clientId,
+    authId,
+    authRole,
+    skip
+  );
+  console.log(msgs, "HUH")
   return msgs;
 };
 

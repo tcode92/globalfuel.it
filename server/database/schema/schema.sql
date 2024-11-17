@@ -106,6 +106,59 @@ CREATE TABLE message_ack (
     ack_at TIMESTAMPTZ DEFAULT NULL
 
 );
+
+
+DROP TABLE IF EXISTS "work_with_us_req" (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    surname TEXT NOT NULL,
+    business TEXT NOT NULL,
+    vat TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the record was created
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Timestamp for the last update
+);
+
+DROP TABLE IF EXISTS "email_queue" CASCADE;
+CREATE TABLE email_queue (
+    id SERIAL PRIMARY KEY, -- Unique identifier for each email
+    from_address VARCHAR(255) NOT NULL, -- Sender's email address
+    to_address VARCHAR(255) NOT NULL, -- Recipient's email address
+    subject VARCHAR(255) NOT NULL, -- Subject of the email
+    body TEXT NOT NULL, -- Body of the email
+    status VARCHAR(50) NOT NULL DEFAULT 'pending', -- Email status (e.g., 'pending', 'sent', 'failed')
+    opened INT DEFAULT 0,
+    sent_at TIMESTAMP NULL, -- Timestamp when the email was sent
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the record was created
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Timestamp for the last update
+    retry_count INT DEFAULT 0, -- Number of retry attempts
+    error_message TEXT NULL, -- Error message if the sending fails
+    track_url TEXT NOT NULL,
+    first_open TIMESTAMPTZ DEFAULT NULL,
+    CONSTRAINT check_no_password CHECK (body NOT ILIKE '%password%') -- Constraint to omit emails containing 'password'
+);
+
+-- Indexes for faster querying
+CREATE INDEX idx_email_status ON email_queue (status);
+CREATE INDEX idx_email_to_address ON email_queue (to_address);
+
+-- SELECT * FROM email_queue WHERE status = 'pending' AND retry_count < 5;
+-- UPDATE email_queue SET status = 'sent', sent_at = NOW() WHERE id = ?;
+/* UPDATE email_queue 
+SET status = 'failed', retry_count = retry_count + 1, error_message = ? 
+WHERE id = ?; */
+
+
+-- END TABLES SECTION
+-- TRIGGERS AND FUNCTIN
+
+
+
+
+
+
+
 -- Create the trigger function
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$

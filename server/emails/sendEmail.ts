@@ -91,7 +91,7 @@ export class Email {
     let template = this.templates.get(data.template);
     if (!template) {
       let t = await fs.readFile(
-        `./emails/templates/${data.template}.html`,
+        `./email-templates/${data.template}.html`,
         "utf-8"
       );
       t = t.replaceAll(`{{WEBSITE}}`, process.env.WEBSITE);

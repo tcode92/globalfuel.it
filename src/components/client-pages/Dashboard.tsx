@@ -29,7 +29,7 @@ export function Dashboard() {
         <title>Dashboard</title>
       </Head>
       <DefaultMain>
-        <div className="flex flex-col gap-2 md:flex-row">
+        <div className="flex flex-col gap-2 mt-4 md:flex-row">
           {/* STATES */}
           <StatsChart data={data.state} />
           {/* TYPES */}

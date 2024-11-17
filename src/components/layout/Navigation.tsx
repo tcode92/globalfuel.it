@@ -6,7 +6,7 @@ import { twMerge } from "tailwind-merge";
 
 export function Navigation() {
   return (
-    <div className="flex justify-self-center self-center items-center justify-center mt-4 gap-6 py-2 px-5 rounded-full mb-4 [@media(max-width:535px)]:hidden">
+    <div className="flex justify-self-center self-center items-center justify-center gap-6 rounded-full [@media(max-width:535px)]:hidden">
       <NavLinks className="uppercase text-md" isMobile={false} />
     </div>
   );
@@ -57,6 +57,19 @@ export function NavLinks({
       {auth?.role === "admin" && (
         <Link href="/staff" className={active("/staff")}>
           Staff
+        </Link>
+      )}
+      {auth?.role === "admin" && (
+        <Link
+          href="/richieste-lavora-con-not"
+          className={active("/richieste-lavora-con-not")}
+        >
+          LCN
+        </Link>
+      )}
+      {auth?.role === "admin" && (
+        <Link href="/email" className={active("/email")}>
+          Stato email
         </Link>
       )}
     </>

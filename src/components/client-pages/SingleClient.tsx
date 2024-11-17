@@ -23,7 +23,7 @@ export function ClientPage() {
   }
   return (
     <Protected>
-      <DefaultMain>
+      <DefaultMain className="gap-4 mt-4">
         <HeadMeta title={client.business + " | Petrol Service S.R.L."} />
         <ClientDetails client={client} />
         <ClientDocs docs={client.docs} clientId={client.id} />

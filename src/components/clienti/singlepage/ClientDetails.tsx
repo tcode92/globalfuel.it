@@ -14,10 +14,15 @@ import { IoPhonePortraitOutline } from "react-icons/io5";
 import { MdOutlineEmail } from "react-icons/md";
 import { CardTitle } from "./CardTitle";
 import { models } from "@types";
+import { Wrapper } from "./Wrapper";
 
-export default function ClientDetails({ client }: { client: models.client.FullClient }) {
+export default function ClientDetails({
+  client,
+}: {
+  client: models.client.FullClient;
+}) {
   return (
-    <div className="border border-blux-50 rounded-2xl w-full">
+    <Wrapper>
       <CardTitle>
         Dettagli
         <LinkButton
@@ -119,7 +124,7 @@ export default function ClientDetails({ client }: { client: models.client.FullCl
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-    </div>
+    </Wrapper>
   );
 }
 function ClientDetail({ children }: { children?: ReactNode }) {

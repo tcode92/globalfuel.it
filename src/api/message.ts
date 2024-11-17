@@ -2,12 +2,12 @@ import { models } from "@types";
 import { http } from "./base";
 class Message {
   create(msg: { clientId: number; message: string }) {
-    return http.post<"OK">(`/api/msg`, msg);
+    return http.post<models.message.Message>(`/api/msg`, msg);
   }
 
-  get(query?: string) {
+  get(clientId: number, skip: number) {
     return http.get<models.message.MessagePagination>(
-      `/api/msg${query ? "?" + query : ""}`
+      `/api/msg?clientId=${clientId}&skip=${skip}`
     );
   }
   ack(id: number) {

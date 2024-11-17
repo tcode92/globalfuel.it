@@ -1,4 +1,3 @@
-// Import the framework and instantiate it
 import cookiePlugin from "@fastify/cookie";
 import Fastify, { FastifyReply, FastifyRequest } from "fastify";
 import { ZodError } from "zod";
@@ -38,6 +37,7 @@ type ErrMethod = (
   errorMessage: string | string[],
   statusCode?: number
 ) => void;
+
 function err(
   this: FastifyReply,
   errorMessage: string | string[],

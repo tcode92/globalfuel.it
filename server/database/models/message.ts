@@ -1,5 +1,5 @@
 import { ROLES } from "@constants";
-import { MessageCreateInput, MessageSearchFilters } from "@validation/message";
+import { MessageCreateInput } from "@validation/message";
 import { dbConn, SQL, Sql } from "../connection";
 import { models } from "./types";
 
@@ -17,7 +17,7 @@ export async function create(
   role: ROLES,
   agencyId?: number
 ) {
-  const msgStm = `INSERT INTO messages (auth_id, message, client_id) VALUES ($1, $2, $3) RETURNING id;`;
+  const msgStm = `INSERT INTO messages (auth_id, message, client_id) VALUES ($1, $2, $3) RETURNING id, created_at;`;
   const msgValues = [authId, msg.message, msg.clientId];
   const ackStm = `INSERT INTO message_ack (msg_id, auth_id, ack) VALUES ($1, $2, $3);`;
   const ackValues = (id: number) => [
@@ -28,13 +28,105 @@ export async function create(
   return await dbConn.transaction(async (tx) => {
     const {
       rows: [newMessage],
-    } = await tx.query<{ id: number }>(msgStm, msgValues);
+    } = await tx.query<{ id: number; created_at: string }>(msgStm, msgValues);
     await tx.query(ackStm, ackValues(newMessage.id));
-    return newMessage.id;
+    const newMsg: models.message.Message = {
+      ack: true,
+      client: "",
+      message: msg.message,
+      client_id: msg.clientId,
+      id: newMessage.id,
+      sender: null,
+      created_at: newMessage.created_at,
+      agency_id: role !== "admin" ? null : agencyId ?? null,
+    };
+    return newMsg;
   });
 }
 
-async function get(
+async function getClientMessages(
+  clientId: number,
+  authId: number,
+  role: ROLES,
+  skip: number = 0
+) {
+  const countStm = new Sql();
+  countStm.add`SELECT COUNT(messages.id) AS total_messages FROM messages `;
+  const stm = new Sql();
+  stm.add`
+  SELECT 
+  messages.id,
+  client.business as client,
+  messages."message",
+  messages.created_at,
+  message_ack."ack" as ack,
+  client.id as client_id,
+  `;
+  if (role === "admin") {
+    stm.add`
+    CASE
+      WHEN sender.id = ${authId}
+      THEN NULL
+      ELSE sender.name
+    END AS sender,
+    CASE
+      WHEN sender.role = 'agency' 
+      THEN sender.id
+      ELSE NULL
+    END AS agency_id
+    FROM messages
+    `;
+  } else {
+    stm.add`
+    CASE
+      WHEN sender.id = ${authId}
+      THEN NULL
+      ELSE 'Staff'
+    END AS sender
+    FROM messages
+    `;
+  }
+  if (role === "admin") {
+    const authJoin = Sql.sql`
+    LEFT JOIN auth AS sender ON sender.id = messages.auth_id
+    LEFT JOIN message_ack ON message_ack.msg_id = messages."id" AND message_ack.auth_id IS NULL
+    LEFT JOIN client ON client."id" = messages.client_id
+    `;
+    stm.addSql(authJoin);
+    countStm.addSql(authJoin);
+  } else {
+    const agencyJoin = Sql.sql`
+    LEFT JOIN auth AS sender ON sender.id = messages.auth_id
+    LEFT JOIN message_ack ON message_ack.msg_id = messages."id" AND message_ack.auth_id = ${authId}
+    LEFT JOIN client ON client."id" = messages.client_id
+    `;
+    stm.addSql(agencyJoin);
+    countStm.addSql(agencyJoin);
+  }
+  const where: SQL[] = [];
+  if (role !== "admin") {
+    where.push(Sql.sql` client.auth_id = ${authId} `);
+  }
+  where.push(Sql.sql` client.id = ${clientId} `);
+  const whereClause = Sql.join(where, Sql.AND);
+  countStm.add`WHERE ${whereClause}`;
+  stm.add`WHERE ${whereClause}`;
+  stm.add`
+  ORDER BY messages.id DESC
+  LIMIT ${100} OFFSET ${skip};
+  `;
+
+  const messages = await stm.execute<models.message.Message>();
+  const count = await countStm.execute<{ total_messages: string }>();
+  console.log(stm.query, stm.values);
+  console.log(countStm.query, countStm.values);
+  return {
+    list: messages.rows,
+    hasMore: +count > 100 + skip,
+  };
+}
+
+/* async function get(
   authId: number,
   role: ROLES,
   filters: MessageSearchFilters
@@ -96,7 +188,7 @@ async function get(
   }
   let search: SQL[] = [];
   if (role !== "admin") {
-    search.push(Sql.sql` client.auth_id = ${authId} `)
+    search.push(Sql.sql` client.auth_id = ${authId} `);
   }
   if (filters.toAck) {
     search.push(Sql.sql` message_ack.ack = FALSE `);
@@ -118,7 +210,6 @@ async function get(
   `;
 
   const { rows } = await stm.execute<models.message.Message>();
-  console.log(countStm.query, countStm.values);
   const {
     rows: [{ total_pages }],
   } = await countStm.execute<{ total_pages: string }>();
@@ -130,7 +221,7 @@ async function get(
     hasNext: filters.page < Math.ceil(+total_pages / filters.limit),
     hasPrev: filters.page > 1,
   };
-}
+} */
 
 async function getToAckCount(authId: number | null) {
   let stm;
@@ -197,7 +288,8 @@ async function ack(messageId: number, authId: number | null) {
 export const message = {
   getToAckCount,
   ack,
-  get,
+  /* get, */
+  getClientMessages,
   create,
   getToAckMessages,
 };

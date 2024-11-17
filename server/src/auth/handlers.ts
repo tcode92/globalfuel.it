@@ -16,6 +16,7 @@ import {
   authResetPasswordExternalService,
   authResetPasswordService,
 } from "./service";
+import { handleError } from "../../utils/error";
 
 // Login
 export const authLoginHandler = async (
@@ -26,7 +27,7 @@ export const authLoginHandler = async (
   req.log.info(`User ${body.email} attempt login.`);
   const data = await authLoginService(body);
   if (data instanceof Error) {
-    return res.err(data.message, data.statusCode);
+    return handleError(res, data);
   }
   await addAccessToken(res, data);
   await addRefreshToken(res, { id: data.id, v: data.rv });
@@ -43,7 +44,7 @@ export const authLogoutHandler = async (
   req: FastifyRequest,
   res: FastifyReply
 ) => {
-  await clearAuthTokens(res); // not sure how to handle this... TODO: Check if this logic can be shared between next and fastify.
+  await clearAuthTokens(res);
   return "OK";
 };
 
@@ -67,10 +68,10 @@ export const authResetLoggedInPasswordHandler = async (
   const body = await AuthResetPasswordSchema.parseAsync(req.body);
   const result = await authResetPasswordService(req.auth.id, body);
   if (result instanceof Error) {
-    return res.err(result.message, result.statusCode);
+    return handleError(res, result);
   }
-  await addAccessToken(res, result.accessToken); // Todo: Abstract away how tokens are set, pass a function to the service to set tokens
-  await addRefreshToken(res, result.refreshToken); // Todo: Abstract away how tokens are set, pass a function to the service to set tokens
+  await addAccessToken(res, result.accessToken);
+  await addRefreshToken(res, result.refreshToken);
   return "OK" as const;
 };
 
@@ -82,7 +83,7 @@ export const authResetExternalPasswordHandler = async (
   const body = await AuthResetExternalPasswordSchema.parseAsync(req.body);
   const result = await authResetPasswordExternalService(body);
   if (result instanceof Error) {
-    return res.err(result.message, result.statusCode);
+    return handleError(res, result);
   }
   // login the auth user
   await addAccessToken(res, result.accessToken);

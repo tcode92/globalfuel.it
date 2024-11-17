@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { FileType } from "@constants";
 import { models } from "@types";
+import { Wrapper } from "./Wrapper";
 
 export default function ClientDocs({
   docs,
@@ -31,7 +32,7 @@ export default function ClientDocs({
 }) {
   const { addDoc } = useClientPage();
   return (
-    <div className="border border-blux-50 rounded-2xl mt-5">
+    <Wrapper>
       <CardTitle>
         Documenti{" "}
         <Button
@@ -62,7 +63,7 @@ export default function ClientDocs({
       ).map((key) => (
         <ShowDocs key={key} name={key} docs={docs[key]} />
       ))}
-    </div>
+    </Wrapper>
   );
 }
 function ShowDocs({

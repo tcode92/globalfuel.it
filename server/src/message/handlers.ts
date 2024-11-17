@@ -1,19 +1,26 @@
-import { FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import {
   messageAckSchema,
   messageCreateSchema,
-  messageFileterSchema,
-} from "../../../shared/validation/message";
+  messageQuerySchema,
+} from "@validation/message";
 import {
   messageAckService,
   messageCreateService,
   messageGetService,
   messageGetToAckService,
 } from "./service";
+import { handleError } from "../../utils/error";
 
-export const messageCreateHandler = async (req: FastifyRequest) => {
+export const messageCreateHandler = async (
+  req: FastifyRequest,
+  res: FastifyReply
+) => {
   const msg = await messageCreateSchema.parseAsync(req.body);
   const result = await messageCreateService(msg, req.auth.id, req.auth.role);
+  if (result instanceof Error) {
+    return handleError(res, result);
+  }
   return result;
 };
 
@@ -26,8 +33,13 @@ export const messageAckHandler = async (req: FastifyRequest) => {
 };
 
 export const messageGetHandler = async (req: FastifyRequest) => {
-  const query = await messageFileterSchema.parseAsync(req.query);
-  return await messageGetService(req.auth.id, req.auth.role, query);
+  const query = await messageQuerySchema.parseAsync(req.query);
+  return await messageGetService(
+    query.clientId,
+    req.auth.id,
+    req.auth.role,
+    query.skip
+  );
 };
 
 export const messageGetToAckHandler = async (req: FastifyRequest) => {

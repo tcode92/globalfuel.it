@@ -13,6 +13,7 @@ import { ArrowRight, CheckIcon } from "lucide-react";
 import { TiArrowForward } from "react-icons/ti";
 import { sendMessage } from "../sharedDialogs/NewMessageDialog";
 import { msg } from "@/api/message";
+import { MessagesModal, openMessages } from "./MessageModal";
 
 export const MessagesHeader = () => {
   const { toAck, getAck, messages } = useMessagetStore();
@@ -43,24 +44,27 @@ export const MessagesHeader = () => {
               Non ci sono messaggi da leggere
             </div>
           ) : (
-            messages.map((m) => <Message key={m.id} message={m} />)
+            messages.map((m) => (
+              <Message
+                key={m.id}
+                message={m}
+                closeDropDown={() => setOpen(false)}
+              />
+            ))
           )}
-        </div>
-        <div className="p-2 w-full text-center border-t">
-          <Link
-            href="/messaggi"
-            className="hover:text-blux justify-center gap-1 text-center flex items-center w-full text-sm font-semibold"
-            onClick={() => setOpen(false)}
-          >
-            Tutti i messaggi <ArrowRight className="w-4 h-4" />
-          </Link>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
 
-const Message = ({ message }: { message: models.message.Message }) => {
+const Message = ({
+  message,
+  closeDropDown,
+}: {
+  message: models.message.Message;
+  closeDropDown: () => void;
+}) => {
   const { ack } = useMessagetStore();
   const time = useMemo(
     () => timeSince(message.created_at),
@@ -80,9 +84,9 @@ const Message = ({ message }: { message: models.message.Message }) => {
           variant={"outline"}
           size={"icon"}
           className="rounded-full w-6 h-6"
-          onClick={async () => {
-            const result = sendMessage(message.client_id, message.client);
-            console.log(result);
+          onClick={() => {
+            openMessages(message.client_id, message.client);
+            closeDropDown();
           }}
         >
           <TiArrowForward />
@@ -108,7 +112,7 @@ const Message = ({ message }: { message: models.message.Message }) => {
   );
 };
 
-const timeSince = (createdAt: string) => {
+export const timeSince = (createdAt: string) => {
   const dateTime = new Date(createdAt);
   const now = new Date();
   const elapsedSeconds = (now.getTime() - dateTime.getTime()) / 1000;

@@ -20,7 +20,7 @@ export async function getAuthFromTokens(
     // valida access cookie.
     const cookiePayload = await verify<AccessToken>(
       accessTokenInp,
-      process.env.ACCESS_KEY! // TODO: Set strong env type for nextjs.
+      process.env.ACCESS_KEY
     );
     if (cookiePayload === false) {
       canRefresh = false;
@@ -51,7 +51,7 @@ export async function getAuthFromTokens(
   if (canRefresh) {
     const cookiePayload = await verify<RefreshToken>(
       refreshTokenInp,
-      process.env.REFRESH_KEY! // TODO: Set strong types for env nextjs
+      process.env.REFRESH_KEY
     );
     if (cookiePayload === false || cookiePayload === "EXPIRED") return null;
     // sign new access token
@@ -73,7 +73,7 @@ export async function getAuthFromTokens(
             rv: user.rv,
             resetPassword: user.actions.resetPassword,
           },
-          process.env.ACCESS_KEY! //TODO Again the same as before.
+          process.env.ACCESS_KEY
         );
     return {
       user: {

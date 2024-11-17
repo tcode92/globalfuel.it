@@ -230,7 +230,7 @@ function FileItem({
     >
       <div>{file.name}</div>
       <div className="flex flex-col text">
-        <div className="flex items-center justify-between w-full">
+        <div className="flex items-center justify-between w-full gap-2">
           <Select
             onValueChange={(value: FileType) => {
               setFiles((prev) => {

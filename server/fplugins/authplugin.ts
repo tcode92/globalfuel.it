@@ -46,7 +46,6 @@ function plugin(
   options: FastifyPluginOptions,
   done: (err?: Error) => void
 ) {
-  // TODO: fix this any
   fastify.decorateRequest("auth", null as any);
   fastify.addHook("onRequest", handler);
   done();

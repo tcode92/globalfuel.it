@@ -1,6 +1,5 @@
 "use server";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { redisConnect } from "../../server/lib/redis";
 import { getAuthFromTokens } from "../../shared/auth";
 global.store;
@@ -12,6 +11,6 @@ export const getSession = async () => {
   const accessToken = biscuits.get("_access")?.value;
   const refreshToken = biscuits.get("_refresh")?.value;
   const auth = await getAuthFromTokens(accessToken, refreshToken, true);
-  if (!auth) redirect("/login");
+  if (!auth) return null;
   return auth.user;
 };
