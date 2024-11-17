@@ -1,0 +1,22 @@
+services:
+  nginx:
+      container_name: globalfuel-nginx
+      build: ./Docker/nginx
+      ports:
+        - "80:80"
+        - "443:443"
+  redis:
+    image: redis:latest
+    container_name: globalfuel-redis
+    ports:
+      - "6379:6379"
+  postgres:
+    image: postgres:latest
+    container_name: globalfuel-postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=root
+      - POSTGRES_DB=devdb
+    

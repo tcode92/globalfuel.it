@@ -1,0 +1,38 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "runDevelopment",
+      "runOptions": {
+        "runOn": "default"
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": ["client-dev-1", "server-dev-1"],
+      "problemMatcher": []
+    },
+    {
+      "label": "client-dev-1",
+      "type": "shell",
+      "command": "npm run dev",
+      "presentation": {
+        "panel": "dedicated"
+      }
+    },
+    /* {
+      "label": "watch-server",
+      "type": "shell",
+      "command": "cd server && yarn watch",
+      "presentation": {
+        "panel": "dedicated"
+      }
+    }, */
+    {
+      "label": "server-dev-1",
+      "type": "shell",
+      "command": "npm run dev:server",
+      "presentation": {
+        "panel": "dedicated"
+      }
+    }
+  ]
+}

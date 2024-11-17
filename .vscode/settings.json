@@ -1,0 +1,27 @@
+{
+    "cmake.configureOnOpen": false,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "dev",
+            "group": "FUELCARD",
+            "database": "devdb",
+            "username": "root",
+            "password": "password"
+        },
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "group": "FUELCARD",
+            "name": "test",
+            "database": "testdb",
+            "username": "root",
+            "password": "password"
+        }
+    ]
+}
