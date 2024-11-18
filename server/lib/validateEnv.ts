@@ -1,5 +1,5 @@
+import { prettyError } from "@validation/base";
 import { TypeOf, ZodError, z } from "zod";
-import { prettyError } from "../utils/error";
 
 export async function validateEnv() {
   try {

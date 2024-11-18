@@ -50,7 +50,6 @@ export const messageGetService = async (
     authRole,
     skip
   );
-  console.log(msgs, "HUH")
   return msgs;
 };
 

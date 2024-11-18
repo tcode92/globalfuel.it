@@ -1,12 +1,8 @@
 import { ZodEnum, ZodString, z } from "zod";
-import {
-  CF_REGEX,
-  PHONE2_REGEX,
-  PHONE_REGEX,
-  SDI_REGEX,
-  zEmail,
-} from "../../server/constants";
+
 import { ClientFG, ClientState, ClientType } from "@constants";
+import { zEmail } from "./base";
+import { CF_REGEX, PHONE2_REGEX, PHONE_REGEX, SDI_REGEX } from "@constants";
 
 const AddressSchema = z.object({
   province: EmptyString(

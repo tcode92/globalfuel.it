@@ -9,6 +9,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { Button } from "../ui/button";
 import { timeSince } from "./MessagesHeader";
+import { FaSpinner } from "react-icons/fa";
+import { Spinner } from "../ui/spinner";
 
 export const MessagesModal = ({
   clientId,
@@ -23,12 +25,14 @@ export const MessagesModal = ({
   const [skip, setSkip] = useState(0);
   function scrollToEnd() {
     if (listRef.current) {
-      console.log(listRef.current.scrollTop);
-      console.log(listRef.current.scrollHeight);
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
   }
-  const [data, setData] = useState<models.message.MessagePagination>({
+  const [data, setData] = useState<
+    models.message.MessagePagination & {
+      list: undefined | models.message.Message[];
+    }
+  >({
     list: [],
     hasMore: false,
   });
@@ -36,7 +40,6 @@ export const MessagesModal = ({
     if (loading) return;
     if (!inputRef.current) return;
     const newText = inputRef.current.innerText;
-    console.log(newText);
     if (!newText || newText.trim() === "") {
       return;
     }
@@ -94,7 +97,15 @@ export const MessagesModal = ({
           className="bg-gray-100 overflow-hidden overflow-y-auto py-2 flex flex-col-reverse gap-2"
           ref={listRef}
         >
-          {data.list.map((m) => (
+          {data.list === undefined && (
+            <div className="h-full mx-auto">
+              <Spinner />
+            </div>
+          )}
+          {data.list?.length === 0 && (
+            <div className="h-full mx-auto">Non ci sono messaggi</div>
+          )}
+          {data.list?.map((m) => (
             <Message
               key={m.id}
               sender={m.sender}

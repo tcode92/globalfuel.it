@@ -1,5 +1,5 @@
 import { auth } from "@/api/auth";
-import { validatePassword } from "@/constants";
+import { validatePassword } from "@constants";
 import { showMsg } from "@/lib/myutils";
 import { getUniqueId } from "@/lib/utils";
 import { addDialog, removeDialog } from "@/store/DialogsUiStore";

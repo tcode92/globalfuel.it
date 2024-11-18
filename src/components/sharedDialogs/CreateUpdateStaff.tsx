@@ -15,7 +15,7 @@ import {
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { staff } from "@/api/staff";
-import { EMAIL_REGEX, isEmpty } from "@/constants";
+import { EMAIL_REGEX, isEmpty } from "@constants";
 import InputError from "../customComponents/InputError";
 import { models } from "@types";
 type PromiseResult = models.staff.Staff | null;

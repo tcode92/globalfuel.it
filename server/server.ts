@@ -5,8 +5,9 @@ import { uploadParser } from "./fplugins/busboy";
 import { logger } from "./lib/log";
 import { privateRouter } from "./src/privateRouter";
 import { publicRouter } from "./src/publicRouter";
-import { CriticalError, KnownError, prettyError } from "./utils/error";
+import { CriticalError, KnownError } from "./utils/error";
 import { codetNotification } from "./lib/codet_notif";
+import { prettyError } from "@validation/base";
 const envToLogger = {
   development: {
     transport: {
@@ -111,7 +112,10 @@ export async function startServer() {
     await fastify.register(privateRouter, { prefix: "/api" });
     await fastify.after();
     const PORT = +(process.argv[2] ?? process.env.PORT ?? 3001);
-    const serverConf = process.env.NODE_ENV === "production" ? {port: PORT} : { port: PORT, host: "0.0.0.0" }
+    const serverConf =
+      process.env.NODE_ENV === "production"
+        ? { port: PORT }
+        : { port: PORT, host: "0.0.0.0" };
     await fastify.listen(serverConf);
     return fastify;
   } catch (err) {

@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { PASSWORD_REGEX, zEmail } from "../../server/constants";
+import { zEmail } from "./base";
+import { PASSWORD_REGEX } from "@constants";
 
 export const AuthLoginSchema = z.object({
   email: zEmail({

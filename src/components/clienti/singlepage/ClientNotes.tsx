@@ -10,7 +10,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { formatDate } from "@/constants";
+import { formatDate } from "@constants";
 import { HiTrash } from "react-icons/hi";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import { useClientPage } from "../useClientPage";

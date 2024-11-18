@@ -1,41 +1,5 @@
 import { FastifyReply } from "fastify";
 import { ZodError } from "zod";
-type ZodErrorRecordString = Record<string, string>;
-type ZodErrorRecord = Record<string, string | ZodErrorRecordString>;
-
-function getZodErrorFieldsFromZodError(e: ZodError) {
-  let errorsObj: ZodErrorRecord = {};
-  for (const issue of e.issues) {
-    if (issue.path.length === 1) {
-      errorsObj[issue.path[0]] = issue.message;
-    } else {
-      const mainKey = issue.path[0];
-      let result: Record<string, any> = {};
-      let curr = result;
-      for (let i = 1; i < issue.path.length; i++) {
-        const k = issue.path[i];
-        if (i === issue.path.length - 1) {
-          curr[k] = issue.message;
-        } else {
-          curr[k] = {};
-          curr = curr[k];
-        }
-      }
-      errorsObj[mainKey] = errorsObj[mainKey]
-        ? Object.assign(errorsObj[mainKey], result)
-        : result;
-    }
-  }
-  return errorsObj;
-}
-export function prettyError(e: ZodError) {
-  const err = e.flatten().fieldErrors;
-  const fieldsError = getZodErrorFieldsFromZodError(e);
-  return {
-    errors: Object.values(err).flat(),
-    fields: fieldsError,
-  };
-}
 
 export class KnownError extends Error {
   errorMessage: string | string[];
@@ -115,4 +79,12 @@ function isKnownError(error: any): error is KnownError {
 }
 function isZodError(error: any): error is ZodError {
   return error?.name === "ZodError";
+}
+
+export function anyToIntOrThrow(param: any, err: string) {
+  let n: number = parseInt(param);
+  if (isNaN(n) || n < 1) {
+    throw new KnownError(err, "error", 400);
+  }
+  return n;
 }

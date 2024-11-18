@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import { createTransport, Transporter } from "nodemailer";
 import path from "node:path";
 import { logger } from "../lib/log";
-import { sleep } from "../constants";
+import { setTimeout as sleep } from "node:timers/promises";
 type EmailArgs = {
   host: string;
   port: string;
@@ -178,6 +178,7 @@ type EmailSendData = DefaultEmailData &
     | ResetPasswordTemplate
     | TextTemplate
     | NewClientTemplate
+    | NewWorkWithUsTemplate
   );
 type DefaultEmailData = {
   subject: string;
@@ -215,5 +216,17 @@ type NewClientTemplate = {
     clientLink: string;
     clientName: string;
     name: string;
+  };
+};
+type NewWorkWithUsTemplate = {
+  template: "new-work-with-us";
+  data: {
+    authName: string;
+    name: string;
+    surname: string;
+    business: string;
+    vat: string;
+    email: string;
+    phone: string;
   };
 };

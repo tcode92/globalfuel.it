@@ -34,7 +34,7 @@ httpClass.display = (response) => {
 };
 httpClass.onRedirect = async (url) => {
   try {
-    Router.push(url);
+    window.history.pushState(undefined, "", url);
   } catch (e) {
     reportError(e, "REDIRECTERR:" + url);
   }

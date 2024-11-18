@@ -9,7 +9,7 @@ import {
   isValidDate,
   isValidPhone,
   transformDate,
-} from "@/constants";
+} from "@constants";
 import { getFormDataFromEvent } from "@/utils/formdata";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -324,7 +324,10 @@ export default function CreateEditClientForm({
 }
 function validateClient(client: Partial<models.client.FullClient>) {
   let errors: ClientErrors = {};
-  function addAddressErr(key: keyof models.client.FullClient["address"], err: string) {
+  function addAddressErr(
+    key: keyof models.client.FullClient["address"],
+    err: string
+  ) {
     if (errors.address) {
       errors.address[key] = err;
     } else {

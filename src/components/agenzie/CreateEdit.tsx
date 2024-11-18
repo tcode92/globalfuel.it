@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { EMAIL_REGEX, isEmpty } from "@/constants";
+import { EMAIL_REGEX, isEmpty } from "@constants";
 import { getUniqueId } from "@/lib/utils";
 import { useAgencyStore } from "@/store/AgencyStore";
 import { addDialog, removeDialog } from "@/store/DialogsUiStore";

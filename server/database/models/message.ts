@@ -118,8 +118,6 @@ async function getClientMessages(
 
   const messages = await stm.execute<models.message.Message>();
   const count = await countStm.execute<{ total_messages: string }>();
-  console.log(stm.query, stm.values);
-  console.log(countStm.query, countStm.values);
   return {
     list: messages.rows,
     hasMore: +count > 100 + skip,

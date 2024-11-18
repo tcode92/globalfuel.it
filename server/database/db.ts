@@ -6,6 +6,7 @@ import { file } from "./models/file";
 import { note } from "./models/note";
 import { message } from "./models/message";
 import { staff } from "./models/staff";
+import { wwu } from "./models/wwu";
 
 export const db = {
   auth,
@@ -16,4 +17,5 @@ export const db = {
   staff,
   dashboard,
   file,
+  wwu
 };

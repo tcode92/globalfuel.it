@@ -1,11 +1,11 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { anyToIntOrThrow } from "../../constants";
 import {
-    noteCreateService,
-    noteDeleteService,
-    noteUpdateService,
+  noteCreateService,
+  noteDeleteService,
+  noteUpdateService,
 } from "./service";
+import { anyToIntOrThrow } from "../../utils/error";
 
 export const noteCreateHandler = async (
   req: FastifyRequest<{

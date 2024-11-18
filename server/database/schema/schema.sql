@@ -108,7 +108,8 @@ CREATE TABLE message_ack (
 );
 
 
-DROP TABLE IF EXISTS "work_with_us_req" (
+DROP TABLE IF EXISTS work_with_us;
+CREATE TABLE work_with_us (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     surname TEXT NOT NULL,
@@ -116,8 +117,9 @@ DROP TABLE IF EXISTS "work_with_us_req" (
     vat TEXT NOT NULL,
     email TEXT NOT NULL,
     phone TEXT NOT NULL,
+    invite_sent BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the record was created
-    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Timestamp for the last update
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP -- Timestamp for the last update
 );
 
 DROP TABLE IF EXISTS "email_queue" CASCADE;
@@ -131,12 +133,11 @@ CREATE TABLE email_queue (
     opened INT DEFAULT 0,
     sent_at TIMESTAMP NULL, -- Timestamp when the email was sent
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the record was created
-    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Timestamp for the last update
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, -- Timestamp for the last update
     retry_count INT DEFAULT 0, -- Number of retry attempts
     error_message TEXT NULL, -- Error message if the sending fails
     track_url TEXT NOT NULL,
-    first_open TIMESTAMPTZ DEFAULT NULL,
-    CONSTRAINT check_no_password CHECK (body NOT ILIKE '%password%') -- Constraint to omit emails containing 'password'
+    first_open TIMESTAMPTZ DEFAULT NULL
 );
 
 -- Indexes for faster querying

@@ -96,7 +96,7 @@
       }
       @media (max-width: 480px) {
         #u_column_6 .v-col-background-color {
-          background-color: #1388e6 !important;
+          background-color: #000000 !important;
         }
       }
     </style>
@@ -379,7 +379,7 @@
                                         color: #ffffff;
                                         font-family: Lato, sans-serif;
                                       "
-                                      >Reimposta la tua password</span
+                                      >Nuova contatto lavora con noi</span
                                     >
                                   </p>
                                 </div>
@@ -486,7 +486,7 @@
                                         line-height: 25.2px;
                                         color: #666666;
                                       "
-                                      >Ciao {{name}},</span
+                                      >Ciao {{authName}},</span
                                     >
                                   </p>
                                   <p style="font-size: 14px; line-height: 140%">
@@ -499,13 +499,9 @@
                                         line-height: 25.2px;
                                         color: #666666;
                                       "
-                                      >Ti abbiamo inviato questa email in
-                                      risposta alla tua richiesta di
-                                      reimpostazione della password.</span
+                                      >Hai ricevuto una nuova richiesta di
+                                      collaborazione</span
                                     >
-                                  </p>
-                                  <p style="font-size: 14px; line-height: 140%">
-                                     
                                   </p>
                                   <p style="font-size: 14px; line-height: 140%">
                                     <span
@@ -514,8 +510,7 @@
                                         line-height: 25.2px;
                                         color: #666666;
                                       "
-                                      >Per reimpostare la tua password, vai al
-                                      link seguenete:</span
+                                      >Di seguito i dati di contatto:</span
                                     ><span
                                       style="
                                         font-size: 18px;
@@ -524,29 +519,113 @@
                                       "
                                     ></span>
                                   </p>
-                                  <p
-                                    style="
-                                      font-size: 14px;
-                                      line-height: 140%;
-                                      text-align: center;
-                                    "
-                                  >
+                                  <!-- Name -->
+                                  <p style="font-size: 14px; line-height: 140%">
                                     <span
                                       style="
-                                        line-height: 19.6px;
+                                        font-size: 18px;
+                                        line-height: 25.2px;
                                         color: #000000;
                                       "
+                                      >Nome: </span
+                                    ><span
+                                      style="
+                                        font-size: 18px;
+                                        line-height: 25.2px;
+                                        color: #000000;
+                                      "
+                                      >{{name}}</span
                                     >
-                                      <a
-                                        href="https://{{WEBSITE}}{{passwordResetUrl}}"
-                                        target="_blank"
-                                        style="
-                                          color: #000000;
-                                          text-decoration: none;
-                                        "
-                                        >https://{{WEBSITE}}{{passwordResetUrl}}</a
-                                      >
-                                    </span>
+                                  </p>
+                                  <!-- Surname -->
+                                  <p style="font-size: 14px; line-height: 140%">
+                                    <span
+                                      style="
+                                        font-size: 18px;
+                                        line-height: 25.2px;
+                                        color: #000000;
+                                      "
+                                      >Cognome: </span
+                                    ><span
+                                      style="
+                                        font-size: 18px;
+                                        line-height: 25.2px;
+                                        color: #000000;
+                                      "
+                                      >{{surname}}</span
+                                    >
+                                  </p>
+                                  <!-- Business -->
+                                  <p style="font-size: 14px; line-height: 140%">
+                                    <span
+                                      style="
+                                        font-size: 18px;
+                                        line-height: 25.2px;
+                                        color: #000000;
+                                      "
+                                      >Ragione sociale: </span
+                                    ><span
+                                      style="
+                                        font-size: 18px;
+                                        line-height: 25.2px;
+                                        color: #000000;
+                                      "
+                                      >{{business}}</span
+                                    >
+                                  </p>
+                                  <!-- Vat -->
+                                  <p style="font-size: 14px; line-height: 140%">
+                                    <span
+                                      style="
+                                        font-size: 18px;
+                                        line-height: 25.2px;
+                                        color: #000000;
+                                      "
+                                      >P.Iva: </span
+                                    ><span
+                                      style="
+                                        font-size: 18px;
+                                        line-height: 25.2px;
+                                        color: #000000;
+                                      "
+                                      >{{vat}}</span
+                                    >
+                                  </p>
+                                  <!-- Email -->
+                                  <p style="font-size: 14px; line-height: 140%">
+                                    <span
+                                      style="
+                                        font-size: 18px;
+                                        line-height: 25.2px;
+                                        color: #000000;
+                                      "
+                                      >Email: </span
+                                    ><span
+                                      style="
+                                        font-size: 18px;
+                                        line-height: 25.2px;
+                                        color: #000000;
+                                      "
+                                      >{{email}}</span
+                                    >
+                                  </p>
+                                  <!-- Phone -->
+                                  <p style="font-size: 14px; line-height: 140%">
+                                    <span
+                                      style="
+                                        font-size: 18px;
+                                        line-height: 25.2px;
+                                        color: #000000;
+                                      "
+                                      >Telefono: </span
+                                    ><span
+                                      style="
+                                        font-size: 18px;
+                                        line-height: 25.2px;
+                                        color: #000000;
+                                      "
+                                      >{{phone}}</span
+                                    >
                                   </p>
                                 </div>
                               </td>
@@ -581,9 +660,9 @@
                                   </style><!
                                 [endif]-->
                                 <div align="left">
-                                  <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:52px; v-text-anchor:middle; width:243px;" arcsize="2%"  stroke="f" fillcolor="#000000"><w:anchorlock/><center style="color:#FFFFFF;"><![endif]-->
+                                  <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:52px; v-text-anchor:middle; width:243px;" arcsize="2%"  stroke="f" fillcolor="#1388E6"><w:anchorlock/><center style="color:#FFFFFF;"><![endif]-->
                                   <a
-                                    href="https://{{WEBSITE}}{{passwordResetUrl}}"
+                                    href="https://{{WEBSITE}}/login"
                                     target="_blank"
                                     class="v-button"
                                     style="
@@ -617,7 +696,7 @@
                                           font-size: 18px;
                                           line-height: 21.6px;
                                         "
-                                        >Reimposta password</span
+                                        >Accedi</span
                                       ></span
                                     >
                                   </a>
@@ -668,8 +747,7 @@
                                             font-size: 16px;
                                             line-height: 22.4px;
                                           "
-                                          >Perfavore ignora questa email se non
-                                          hai richiesto la reimpostazione della
+                                          >Ti chiederemo di inserire una nuova
                                           password.</span
                                         ></em
                                       ></span
@@ -829,6 +907,7 @@
                 </div>
               </div>
             </div>
+
             <div
               class="u-row-container"
               style="padding: 0px; background-color: transparent"

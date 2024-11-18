@@ -1,3 +1,4 @@
+import { WorkWithUsForm } from "@/components/client-pages/workWithUsForm";
 import { HighLightElement } from "@/components/customComponents/HighlightElement";
 import InputError from "@/components/customComponents/InputError";
 import InputWrapper from "@/components/customComponents/InputWrapper";
@@ -56,43 +57,7 @@ export default function WorkWithUs() {
           Compila il modulo qui sotto e il nostro team ti contatterà per
           discutere i dettagli della collaborazione.
         </p>
-        <form className="gap-4 flex flex-col md:grid md:grid-cols-2 justify-items-end w-full">
-          <InputWrapper>
-            <Label>Nome *</Label>
-            <Input placeholder="Nome" />
-            <InputError />
-          </InputWrapper>
-          <InputWrapper>
-            <Label>Cognome *</Label>
-            <Input placeholder="Cognome" />
-          </InputWrapper>
-          <InputWrapper>
-            <Label>Ragione sociale *</Label>
-            <Input placeholder="Ragione sociale" />
-          </InputWrapper>
-          <InputWrapper>
-            <Label>P. IVA *</Label>
-            <Input placeholder="P.IVA." />
-          </InputWrapper>
-          <InputWrapper>
-            <Label>Email *</Label>
-            <Input placeholder="Email" />
-          </InputWrapper>
-          <InputWrapper>
-            <Label>Telefono *</Label>
-            <Input placeholder="Telefono" />
-          </InputWrapper>
-          <InputWrapper>
-            <Label className="flex items-start">
-              <Checkbox className="mr-2" /> Dichiaro di aver letto l&apos;informativa
-              privacy.
-            </Label>
-          </InputWrapper>
-          <div className="col-span-2"></div>
-          <Button variant={"blue"} className="self-end col-span-2">
-            Invia
-          </Button>
-        </form>
+        <WorkWithUsForm />
       </section>
     </DefaultMain>
   );

@@ -60,22 +60,26 @@ export const authResetPasswordExternalService = async (
   }
   const dbToken = await db.auth.getToken(data.token);
   if (!dbToken || dbToken.token !== data.token) {
-    return new KnownError("EXPIRED", "error", 401);
+    return new KnownError("Richiesta non valida.", "error", 401);
   }
   const payload = await verify<{ id: number }>(
     data.token,
     process.env.MAIL_KEY
   );
   if (payload === false) {
-    return new KnownError("INVALID", "error", 401);
+    return new KnownError("Richiesta non valida.", "error", 401);
   }
   if (payload === "EXPIRED") {
-    return new KnownError("EXPIRED", "error", 401);
+    return new KnownError(
+      "Il tempo per reimpostare la password è scaduto,\nEffettua il recupero di nuovo.",
+      "error",
+      401
+    );
   }
   const authId = payload.id;
   const auth = await db.auth.getById(authId);
   if (!auth) {
-    return new RedirectError(`/reimposta-password`);
+    return new RedirectError(`/login`);
   }
   const password = await hashPassword(data.password);
   const newTokenVersion = genRefreshTokenVersion(auth.rv ?? undefined);

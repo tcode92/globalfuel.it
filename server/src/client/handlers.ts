@@ -18,8 +18,7 @@ import {
   ClientUpdateStateSchema,
   ClientUpdateTypeSchema,
 } from "../../../shared/validation/client";
-import { anyToIntOrThrow } from "../../constants";
-import { KnownError } from "../../utils/error";
+import { anyToIntOrThrow, KnownError } from "../../utils/error";
 
 export const clientGetHandler = async (
   req: FastifyRequest,

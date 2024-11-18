@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import LinkButton from "@/components/ui/LinkButton";
-import { formatDate, transformDate } from "@/constants";
+import { formatDate, transformDate } from "@constants";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 import { BiCopyAlt } from "react-icons/bi";

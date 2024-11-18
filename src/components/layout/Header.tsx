@@ -71,7 +71,6 @@ export function LoggedInHeader() {
                   await authApi.logout().request;
                   clearStores();
                   redirect("/", RedirectType.replace);
-                  return;
                 }}
               >
                 <span className="mr-2">

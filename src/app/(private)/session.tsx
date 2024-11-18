@@ -3,6 +3,7 @@ import { useAuthStore } from "@/store/AuthStore";
 import { redirect, usePathname, useSearchParams } from "next/navigation";
 import { ReactNode, useEffect, useMemo } from "react";
 import { AccessToken } from "../../../server/lib/jwt";
+import { resetPasswordDialog } from "@/components/sharedDialogs/ResetPasswordDialog";
 
 export const WithSession = ({
   children,
@@ -21,6 +22,9 @@ export const WithSession = ({
       return redirect(`/accedi?${currentUrl}`);
     } else {
       setAuth(session);
+      if (session.resetPassword) {
+        resetPasswordDialog(undefined, true);
+      }
     }
   }, [session, currentUrl, setAuth]);
   if (authenticated) {

@@ -59,7 +59,7 @@ export function NavLinks({
           Staff
         </Link>
       )}
-      {auth?.role === "admin" && (
+      {/* {auth?.role === "admin" && (
         <Link
           href="/richieste-lavora-con-not"
           className={active("/richieste-lavora-con-not")}
@@ -71,7 +71,7 @@ export function NavLinks({
         <Link href="/email" className={active("/email")}>
           Stato email
         </Link>
-      )}
+      )} */}
     </>
   );
 }

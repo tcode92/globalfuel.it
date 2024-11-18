@@ -89,7 +89,7 @@ export const authResetExternalPasswordHandler = async (
   await addAccessToken(res, result.accessToken);
   await addRefreshToken(res, result.refreshToken);
 
-  return res.redirect("/dashboard");
+  return "OK";
 };
 
 // Forgot password email

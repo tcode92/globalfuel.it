@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { zEmail } from "../../server/constants";
+import { zEmail } from "./base";
 
 export const CreateUpdateStaffSchema = z.object({
   name: z.string(),

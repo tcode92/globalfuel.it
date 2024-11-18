@@ -1,8 +1,7 @@
-import { QueryResultRow, native, Client } from "pg";
+import { QueryResultRow, native, Client, Pool, PoolClient } from "pg";
 
-import Pool from "pg-pool";
-class DB extends Pool<Client> {
-  async transaction<T>(callback: (tx: Client) => Promise<T>) {
+class DB extends Pool {
+  async transaction<T>(callback: (tx: PoolClient) => Promise<T>) {
     const c = await this.connect();
     try {
       c.query("BEGIN;");
@@ -32,9 +31,11 @@ declare global {
 export class Sql {
   private _query: string;
   private _values: any[];
-  constructor() {
+  private conn: Pool | PoolClient;
+  constructor(conn?: PoolClient) {
     this._query = "";
     this._values = [];
+    this.conn = conn ?? dbConn;
   }
   static get NULL() {
     return new SQLKEYWORD("NULL");
@@ -144,7 +145,7 @@ export class Sql {
     return final;
   }
   execute<T extends QueryResultRow>() {
-    return dbConn.query<T, T[]>(this._query, this._values);
+    return this.conn.query<T, T[]>(this._query, this._values);
   }
 }
 export class SQLKEYWORD {

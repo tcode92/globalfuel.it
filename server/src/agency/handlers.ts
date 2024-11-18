@@ -9,7 +9,7 @@ import {
   AgencyGetQuerySchema,
   AgencyUpdateSchema,
 } from "../../../shared/validation/agency";
-import { KnownError } from "../../utils/error";
+import { anyToIntOrThrow, KnownError } from "../../utils/error";
 import {
   createAgencyService,
   deleteAgencyService,
@@ -17,7 +17,6 @@ import {
   getOneAgencyService,
   updateAgencyService,
 } from "./service";
-import { anyToIntOrThrow } from "../../constants";
 
 // Get
 export const agencyGetHandler = async (req: FastifyRequest) => {
