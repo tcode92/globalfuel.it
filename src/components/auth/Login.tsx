@@ -59,7 +59,6 @@ export default function Login({ onLoggedIn }: { onLoggedIn?: () => void }) {
               <Label>Email</Label>
               <Input
                 name="email"
-                defaultValue={"tareq@codet.it"}
                 id="email"
                 type="email"
                 autoComplete="username"
@@ -70,7 +69,6 @@ export default function Login({ onLoggedIn }: { onLoggedIn?: () => void }) {
               <Label>Password</Label>
               <InputPassword
                 name="password"
-                defaultValue={"Password123"}
                 id="password"
                 autoComplete="current-password"
               />
