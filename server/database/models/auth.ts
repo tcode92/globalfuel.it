@@ -5,7 +5,7 @@ import { models } from "./types";
 async function create(data: models.auth.AuthCreateInput) {
   const result = await dbConn.query<{ id: number }>(
     `INSERT INTO auth (name, email, password, role, actions) VALUES ($1, $2, $3, $4, $5) RETURNING id;`,
-    [data.name, data.email, data.password, data.role, { resetPassword: true }]
+    [data.name, data.email, data.password, data.role, { rp: true }]
   );
   return result.rows[0];
 }

@@ -3,6 +3,7 @@ import { createTransport, Transporter } from "nodemailer";
 import path from "node:path";
 import { logger } from "../lib/log";
 import { setTimeout as sleep } from "node:timers/promises";
+import { db } from "../database/db";
 type EmailArgs = {
   host: string;
   port: string;
@@ -22,25 +23,15 @@ export class Email {
   protected user: string;
   protected password: string;
   protected replayTo?: string;
-  protected from?: string;
-  private queue: EmailSendData[];
+  private queue: (EmailSendData & { id: number; trackId: string })[];
   private delay: NodeJS.Timeout | undefined;
   private sending: boolean;
   private delayTime: number;
   private templates: Map<string, string>;
   private smtpTransport: Transporter;
   private isShutdown: boolean;
-  constructor({
-    host,
-    port,
-    user,
-    password,
-    delay = 10,
-    from,
-    replayTo,
-  }: EmailArgs) {
+  constructor({ host, port, user, password, delay = 10, replayTo }: EmailArgs) {
     this.host = host;
-    this.from = from;
     this.replayTo = replayTo;
     this.port = Number(port);
     this.password = password;
@@ -67,7 +58,10 @@ export class Email {
   async start() {
     try {
       const temp = await fs.readFile("./tempemail.json", "utf-8");
-      const mails = JSON.parse(temp) as EmailSendData[];
+      const mails = JSON.parse(temp) as (EmailSendData & {
+        id: number;
+        trackId: string;
+      })[];
       this.queue = [...mails, ...this.queue];
       this.sending = false;
       this.next();
@@ -79,15 +73,7 @@ export class Email {
       logger.info("No mails found.. starting sending new emails..");
     }
   }
-  send(data: EmailSendData) {
-    logger.info("Recived new email to send.");
-    this.queue.push(data);
-    this.next();
-  }
-  sendSync(data: EmailSendData) {
-    return this.smpt(data);
-  }
-  private async smpt(data: EmailSendData) {
+  async tempateHtml(data: EmailSendData, trackId?: string) {
     let template = this.templates.get(data.template);
     if (!template) {
       let t = await fs.readFile(
@@ -109,19 +95,64 @@ export class Email {
       template = template.replaceAll(`{{name}}`, data.data.name);
       template = template.replaceAll(`{{title}}`, data.data.title);
       template = template.replaceAll(`{{text}}`, emailContent.join("\n"));
+      // replace track id
+      template = template.replace("{{trackId}}", trackId ?? "no-track");
     } else {
       const emailData = Object.entries(data.data);
 
       for (const [key, value] of emailData) {
         template = template.replaceAll(`{{${key}}}`, value);
       }
+      // replace track id
+      template = template.replace("{{trackId}}", trackId ?? "no-track");
     }
+    return template;
+  }
+  send(data: EmailSendData) {
+    logger.info("Recived new email to send.");
+    let mailBody = { ...data.data };
+    if (data.template === "new-account" && "password" in mailBody) {
+      mailBody.password = "NON-DISPONIBILE";
+    }
+    db.mail
+      .newEmail({
+        template: data.template,
+        body: mailBody,
+        from_address: data.from,
+        to_address: data.to,
+        subject: data.subject,
+      })
+      .then(({ id, trackId }) => {
+        this.queue.push({ ...data, id, trackId });
+        this.next();
+      });
+  }
+  sendSync(data: EmailSendData) {
+    logger.info("Recived new email to send.");
+    let mailBody = { ...data.data };
+    if (data.template === "new-account" && "password" in mailBody) {
+      mailBody.password = "NON-DISPONIBILE";
+    }
+    return db.mail
+      .newEmail({
+        template: data.template,
+        body: mailBody,
+        from_address: data.from,
+        to_address: data.to,
+        subject: data.subject,
+      })
+      .then(({ id, trackId }) => {
+        return this.smpt(data, id, trackId);
+      });
+  }
+  private async smpt(data: EmailSendData, id: number, trackId: string) {
     try {
+      const template = await this.tempateHtml(data, trackId);
       const emailAddress: string | string[] =
         process.env.NODE_ENV !== "production" ? "dev@codet.it" : data.to;
       const result = await this.smtpTransport.sendMail({
-        from: data.from || this.from,
-        replyTo: data.replayTo || this.replayTo,
+        from: `GlobalFuel <${data.from}>`,
+        replyTo: this.replayTo,
         to: emailAddress,
         subject: data.subject,
         text: data.text,
@@ -136,9 +167,15 @@ export class Email {
         }),
       });
       logger.info(result);
+      await db.mail.markMailSent(id);
       return true;
     } catch (e) {
-      logger.error(e);
+      logger.error(e, `MAIL ID ${id}`);
+      let errMsg = `Errore sconosciuto - MAIL ID ${id}`;
+      if (e instanceof Error) {
+        errMsg = e.message + ` - MAIL ID ${id}`;
+      }
+      await db.mail.markMailError(id, errMsg);
       return false;
     }
   }
@@ -149,7 +186,7 @@ export class Email {
     const nextEmail = this.queue.shift();
     if (nextEmail) {
       this.sending = true;
-      await this.smpt(nextEmail);
+      await this.smpt(nextEmail, nextEmail.id, nextEmail.trackId);
       this.delay = setTimeout(() => {
         this.sending = false;
         this.delay = undefined;
@@ -172,7 +209,7 @@ export class Email {
     return;
   }
 }
-type EmailSendData = DefaultEmailData &
+export type EmailSendData = DefaultEmailData &
   (
     | NewAccountTemplate
     | ResetPasswordTemplate
@@ -184,14 +221,14 @@ type DefaultEmailData = {
   subject: string;
   to: string;
   text?: string;
-  from?: string;
-  replayTo?: string;
+  from: "notifiche@globalfuel.it" | "noreplay@globalfuel.it";
   files?: { path: string; name: string }[];
 };
 type NewAccountTemplate = {
   template: "new-account";
   data: {
     name: string;
+    email: string;
     password: string;
   };
 };

@@ -22,7 +22,7 @@ export const WithSession = ({
       return redirect(`/accedi?${currentUrl}`);
     } else {
       setAuth(session);
-      if (session.resetPassword) {
+      if (session.rp) {
         resetPasswordDialog(undefined, true);
       }
     }

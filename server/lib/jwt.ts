@@ -156,7 +156,7 @@ export type AccessToken = {
   name: string;
   role: "admin" | "agency";
   rv: string;
-  resetPassword?: boolean;
+  rp?: boolean;
 };
 export type RefreshToken = {
   id: number;

@@ -16,7 +16,7 @@ async function create(name: string, email: string, password: string) {
       rows: [staff],
     } = await dbConn.query<models.staff.Staff>(
       "INSERT INTO auth (name, email, password, actions, role) VALUES ($1, $2, $3, $4, 'admin') RETURNING name, email, id;",
-      [name, email, password, { resetpassword: true }]
+      [name, email, password, { rp: true }]
     );
     return staff;
   } catch (e) {

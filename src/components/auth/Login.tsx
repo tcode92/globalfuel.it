@@ -13,7 +13,9 @@ import LinkButton from "../ui/LinkButton";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { useSearchParams } from "next/navigation";
 export default function Login({ onLoggedIn }: { onLoggedIn?: () => void }) {
+  const query = useSearchParams()
   const [errors, setErrors] = useState<Record<string, string | null>>({
     email: null,
     password: null,
@@ -62,6 +64,7 @@ export default function Login({ onLoggedIn }: { onLoggedIn?: () => void }) {
                 id="email"
                 type="email"
                 autoComplete="username"
+                defaultValue={query.get("user")?.toString() ?? undefined}
               />
               {errors.password && errors.password}
             </InputWrapper>

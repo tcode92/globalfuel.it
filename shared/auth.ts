@@ -42,7 +42,7 @@ export async function getAuthFromTokens(
           id: cookiePayload.id,
           name: cookiePayload.name,
           role: cookiePayload.role,
-          resetPassword: cookiePayload.resetPassword,
+          rp: cookiePayload.rp,
         },
         accessToken: undefined,
       };
@@ -71,7 +71,7 @@ export async function getAuthFromTokens(
             name: user.name,
             role: user.role,
             rv: user.rv,
-            resetPassword: user.actions.resetPassword,
+            rp: user.actions.rp,
           },
           process.env.ACCESS_KEY
         );
@@ -80,7 +80,7 @@ export async function getAuthFromTokens(
         id: user.id,
         name: user.name,
         role: user.role,
-        resetPassword: user.actions.resetPassword,
+        rp: user.actions.rp,
       },
       accessToken,
     };

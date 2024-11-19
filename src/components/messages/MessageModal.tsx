@@ -2,15 +2,16 @@
 import { msg } from "@/api/message";
 import { cn } from "@/lib/utils";
 import { addDialog, removeDialog } from "@/store/DialogsUiStore";
+import { useMessagetStore } from "@/store/messageStore";
 import { models } from "@types";
 import { ArrowUp, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { Button } from "../ui/button";
-import { timeSince } from "./MessagesHeader";
-import { FaSpinner } from "react-icons/fa";
 import { Spinner } from "../ui/spinner";
+import { timeSince } from "./MessagesHeader";
+import { abort } from "process";
 
 export const MessagesModal = ({
   clientId,
@@ -19,6 +20,8 @@ export const MessagesModal = ({
   clientId: number;
   clientName: string;
 }) => {
+  const { ack, ackAllClientMessages } = useMessagetStore();
+  const [initialOpenAck, setInitialOpenAck] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
   const inputRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -77,9 +80,39 @@ export const MessagesModal = ({
     scrollToEnd();
   }, [data.list]);
   useEffect(() => {
+    if (initialOpenAck) return;
+    if (data.list.length === 0) return;
+    let a: () => void;
+    if (data.list.length > 0) {
+      const { abort, request } = msg.ackAllClient(clientId);
+      a = abort;
+      request.then(() => {
+        setInitialOpenAck(true);
+        ackAllClientMessages(clientId);
+      });
+    }
+    return () => {
+      if (a) a();
+    };
+  }, [data.list, initialOpenAck]);
+  useEffect(() => {
     document.body.classList.add("no-scroll");
-    return () => document.body.classList.remove("no-scroll");
+    const handler = (ev: CustomEvent<models.message.Message>) => {
+      if (ev.detail.client_id !== clientId) return;
+      setData((prev) => {
+        return {
+          ...prev,
+          list: [ev.detail, ...prev.list],
+        };
+      });
+    };
+    window.addEventListener("chat", handler as any);
+    return () => {
+      window.removeEventListener("chat", handler as any);
+      document.body.classList.remove("no-scroll");
+    };
   }, []);
+
   return (
     <div className="bd max-w-[100vw] p-4">
       <div className="h-[90%] max-w-[600px] w-full bg-white rounded-xl grid grid-rows-[auto_1fr_auto]">
@@ -108,10 +141,9 @@ export const MessagesModal = ({
           {data.list?.map((m) => (
             <Message
               key={m.id}
-              sender={m.sender}
-              message={m.message}
+              message={m}
               owner={m.sender === null}
-              dateTime={m.created_at}
+              ack={ack}
             />
           ))}
         </div>
@@ -143,17 +175,21 @@ export const MessagesModal = ({
 };
 
 function Message({
-  dateTime,
   message,
-  sender,
   owner = false,
+  ack,
 }: {
-  dateTime: string;
-  message: string;
-  sender: string | null;
+  message: models.message.Message;
   owner?: boolean;
+  ack: (id: number) => void;
 }) {
-  const t = useMemo(() => timeSince(dateTime), [dateTime]);
+  const t = useMemo(() => timeSince(message.created_at), [message.created_at]);
+  useEffect(() => {
+    if (message.ack) return;
+    const { request, abort } = msg.ack(message.id);
+    request.then(() => ack(message.id));
+    return () => abort();
+  }, [message.ack]);
   return (
     <div
       className={cn(
@@ -176,9 +212,9 @@ function Message({
             owner ? "text-blux" : "text-orangex"
           )}
         >
-          {sender}
+          {message.sender}
         </div>
-        <div className="whitespace-pre-wrap break-words">{message}</div>
+        <div className="whitespace-pre-wrap break-words">{message.message}</div>
       </div>
       <div className="text-gray-400 text-[0.75rem]">{t}</div>
     </div>

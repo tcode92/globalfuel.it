@@ -66,7 +66,7 @@ export type ClientSortOptions = {
     | "type"]: "asc" | "desc" | undefined;
 };
 /**
- * 
+ *
  * @param page number
  * @param limit number
  * @param search client business or email
@@ -126,15 +126,10 @@ async function getClientsTable(
     a.id as auth_id,
     c.state,
     c.type,
-    c.vat,
-    COUNT(ma.ack) as "toAck"
+    c.vat
   FROM
     client c
   JOIN auth a ON c.auth_id = a.id
-  LEFT JOIN messages msg ON msg.client_id = c.id
-  LEFT JOIN message_ack ma ON ma.msg_id = msg.id AND ma.ack = FALSE AND ma.auth_id ${
-    authId ? Sql.sql` = ${authId}` : Sql.sql` IS NULL `
-  }
   ${where.length > 0 ? Sql.sql`WHERE ${whereClause}` : Sql.EMPTY} `;
   mainQuery.add` GROUP BY c.id, a.name, a.id `;
   if (sortBy) {
@@ -195,7 +190,11 @@ async function getClientsTable(
   return { list: rows, total: Math.ceil(+total / limit) || 1 };
 }
 
-async function getOne(id: number, includeAgency: boolean = false, authId?: number) {
+async function getOne(
+  id: number,
+  includeAgency: boolean = false,
+  authId?: number
+) {
   const query = new Sql();
   query.add`
   SELECT
@@ -380,6 +379,27 @@ async function getCurrentType(id: number) {
   return client.type;
 }
 
+async function getClientAgencyInfo(clientId: number) {
+  const stm = new Sql();
+  stm.add`SELECT client.id, 
+client.business as name, 
+auth.name as agency,
+auth.id as agency_id 
+FROM client
+JOIN auth ON auth.id = client.auth_id
+WHERE client.id = ${clientId}`;
+
+  const { rows } = await stm.execute<{
+    id: number;
+    name: string;
+    agency: string;
+    agency_id: number;
+  }>();
+
+  if (rows[0]) return rows[0];
+  return null;
+}
+
 async function getAgency<K extends (keyof models.agency.Agency)[]>(
   clientId: number,
   select: K
@@ -413,4 +433,5 @@ export const client = {
   getCurrentState,
   getCurrentType,
   getAgency,
+  getClientAgencyInfo
 };

@@ -19,7 +19,11 @@ export const clientGetService = async (
 ) => {
   // Get a single client details.
   if (query.id) {
-    const data = await db.client.getOne(query.id, role === "admin", role === "admin" ? undefined : authId);
+    const data = await db.client.getOne(
+      query.id,
+      role === "admin",
+      role === "admin" ? undefined : authId
+    );
     if (!data) return new KnownError("Cliente non trovato.", "error", 404);
     return data;
   }
@@ -107,6 +111,7 @@ export const clientCreateExternalService = async (
         clientName: client.business,
         name: user.name,
       },
+      from: "notifiche@globalfuel.it",
       to: user.email,
       subject: "Notifica nuovo cliente",
     });
@@ -137,6 +142,7 @@ export const clientUpdateStateService = async (
   if (prevState !== state) {
     const agency = await db.client.getAgency(clientId, ["email", "name"]);
     if (!agency) return newClient; // we assume this is the system agency so no mail needed to be sent.
+
     mailer.send({
       template: "text",
       data: {
@@ -145,6 +151,7 @@ export const clientUpdateStateService = async (
         title: "Modifica stato cliente",
       },
       to: agency.email,
+      from: "notifiche@globalfuel.it",
       subject: "Modifica stato cliente",
     });
   }
@@ -177,8 +184,10 @@ export const clientUpdateTypeService = async (
     if (prevType !== null && type !== null) {
       text = `modificato da ${prevType} a ${type}`;
     }
+
     mailer.send({
       template: "text",
+      from: "notifiche@globalfuel.it",
       data: {
         name: newClient.agency_name,
         text: `Il tipo del cliente ${newClient?.business} è stato ${text}.`,
@@ -219,6 +228,7 @@ export const clientUpdateCodeService = async (
       text = `Il codice del tuo cliente ${newClient.business} è stato modificato da ${oldCode} a ${code}.`;
     }
   }
+
   mailer.send({
     template: "text",
     data: {
@@ -228,6 +238,7 @@ export const clientUpdateCodeService = async (
     },
     subject: "Codice Carta",
     to: agency.email,
+    from: "notifiche@globalfuel.it",
     text: text,
   });
   return newClient;

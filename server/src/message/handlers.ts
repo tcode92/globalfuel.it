@@ -1,10 +1,12 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
+  messageAckClientSchema,
   messageAckSchema,
   messageCreateSchema,
   messageQuerySchema,
 } from "@validation/message";
 import {
+  messageAckClientService,
   messageAckService,
   messageCreateService,
   messageGetService,
@@ -17,7 +19,7 @@ export const messageCreateHandler = async (
   res: FastifyReply
 ) => {
   const msg = await messageCreateSchema.parseAsync(req.body);
-  const result = await messageCreateService(msg, req.auth.id, req.auth.role);
+  const result = await messageCreateService(msg, req.auth, req.server);
   if (result instanceof Error) {
     return handleError(res, result);
   }
@@ -28,6 +30,13 @@ export const messageAckHandler = async (req: FastifyRequest) => {
   const { id } = await messageAckSchema.parseAsync(req.body);
   return await messageAckService(
     id,
+    req.auth.role === "admin" ? null : req.auth.id
+  );
+};
+export const messageAckClientHandler = async (req: FastifyRequest) => {
+  const { clientId } = await messageAckClientSchema.parseAsync(req.body);
+  return await messageAckClientService(
+    clientId,
     req.auth.role === "admin" ? null : req.auth.id
   );
 };

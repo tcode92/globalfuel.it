@@ -2,8 +2,8 @@ import { z } from "zod";
 import { hashPassword } from "./lib/password";
 import { generateRandomString } from "./lib/random";
 import { Email } from "./emails/sendEmail";
-import { db } from "database/db";
-import { dbConn } from "database/connection";
+import { db } from "./database/db";
+import { dbConn } from "./database/connection";
 
 interface AuthArgs {
   email: string;
@@ -66,12 +66,14 @@ async function main(): Promise<void> {
       password: process.env.MAIL_PASS,
       port: process.env.MAIL_PORT,
       user: process.env.MAIL_USER,
-      from: "noreplay@codet.it",
+      from: "noreplay@globalfuel.it",
     });
     await mailer.sendSync({
       template: "new-account",
+      from: "noreplay@globalfuel.it",
       data: {
         name: name,
+        email,
         password: pass,
       },
       to: email,

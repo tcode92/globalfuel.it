@@ -21,7 +21,7 @@ async function create(agency: models.agency.AgencyCreateInput) {
         agency.email,
         "agency",
         agency.password,
-        { resetpassword: true },
+        { rp: true },
       ]
     );
     return newAgency;

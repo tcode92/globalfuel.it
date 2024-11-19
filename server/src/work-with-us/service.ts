@@ -5,15 +5,15 @@ import { logger } from "../../lib/log";
 export const createWorkWithUsService = async (data: CreateWorkWithUsInput) => {
   const exists = await db.wwu.checkEmailExists(data.email);
   if (exists) {
-    logger.warn(data, "WORK WITH US MULTI ATTEMPT")
+    logger.warn(data, "WORK WITH US MULTI ATTEMPT");
     return true;
   }
   const result = await db.wwu.create(data);
   if (!result) {
     logger.error("Could not create a new record.");
   }
-  db.staff.get().then((staff) => {
-    staff.forEach((member) => {
+  db.staff.get().then(async (staff) => {
+    for (const member of staff) {
       mailer.send({
         subject: "Nuova richiesta di collaborazione",
         data: {
@@ -27,10 +27,9 @@ export const createWorkWithUsService = async (data: CreateWorkWithUsInput) => {
         },
         template: "new-work-with-us",
         to: member.email,
-        from: "noreplay@codet.it",
-        replayTo: "info@codet.it",
+        from: "notifiche@globalfuel.it",
       });
-    });
+    }
   });
   return true;
 };

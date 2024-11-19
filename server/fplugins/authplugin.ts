@@ -15,7 +15,7 @@ declare module "fastify" {
       id: number;
       name: string;
       role: ROLES;
-      resetPassword?: boolean;
+      rp?: boolean;
     };
   }
 }

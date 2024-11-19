@@ -264,9 +264,6 @@ const Row = ({
             href={`/clienti/${item.id}`}
             className="text-blux flex items-center"
           >
-            {item.toAck > 0 ? (
-              <MessageIcon className="mr-1 scale-x-[-1] text-green-700" />
-            ) : null}
             {item.business}
           </Link>
         </TableCell>

@@ -35,7 +35,7 @@ export const authLoginHandler = async (
     id: data.id,
     name: data.name,
     role: data.role,
-    resetPassword: data.resetPassword,
+    rp: data.rp,
   });
 };
 

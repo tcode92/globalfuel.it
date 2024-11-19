@@ -101,6 +101,7 @@ CREATE TABLE
 DROP TABLE IF EXISTS "message_ack" CASCADE;
 CREATE TABLE message_ack (
     msg_id INT REFERENCES messages(id) ON DELETE CASCADE,
+    client_id INT REFERENCES client(id) ON DELETE CASCADE,
     auth_id INT REFERENCES auth(id) ON DELETE CASCADE, -- auth_id is set only when the message is to be acked by agency
     ack BOOLEAN DEFAULT FALSE,
     ack_at TIMESTAMPTZ DEFAULT NULL
@@ -128,7 +129,8 @@ CREATE TABLE email_queue (
     from_address VARCHAR(255) NOT NULL, -- Sender's email address
     to_address VARCHAR(255) NOT NULL, -- Recipient's email address
     subject VARCHAR(255) NOT NULL, -- Subject of the email
-    body TEXT NOT NULL, -- Body of the email
+    template VARCHAR(255) NOT NULL, -- Template used to send email
+    body JSON NOT NULL, -- Body of the email
     status VARCHAR(50) NOT NULL DEFAULT 'pending', -- Email status (e.g., 'pending', 'sent', 'failed')
     opened INT DEFAULT 0,
     sent_at TIMESTAMP NULL, -- Timestamp when the email was sent
@@ -136,7 +138,7 @@ CREATE TABLE email_queue (
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, -- Timestamp for the last update
     retry_count INT DEFAULT 0, -- Number of retry attempts
     error_message TEXT NULL, -- Error message if the sending fails
-    track_url TEXT NOT NULL,
+    track_id UUID NOT NULL UNIQUE DEFAULT gen_random_uuid(),
     first_open TIMESTAMPTZ DEFAULT NULL
 );
 

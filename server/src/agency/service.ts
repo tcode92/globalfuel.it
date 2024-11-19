@@ -4,7 +4,7 @@ import {
   AgencyCreateInput,
   AgencyGetQueryInput,
   AgencyUpdateInput,
-} from "../../../shared/validation/agency";
+} from "@validation/agency";
 import { db } from "../../database/db";
 import { logger } from "../../lib/log";
 import { hashPassword } from "../../lib/password";
@@ -44,11 +44,12 @@ export const createAgencyService = async (agency: AgencyCreateInput) => {
     template: "new-account",
     data: {
       name: agency.name,
+      email: agency.email,
       password: pass,
     },
     subject: "Conferma registrazione",
     to: agency.email,
-    from: "No replay <noreplay@codet.it>",
+    from: "noreplay@globalfuel.it",
   });
   return newAgency;
 };

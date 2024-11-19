@@ -8,6 +8,9 @@ import { publicRouter } from "./src/publicRouter";
 import { CriticalError, KnownError } from "./utils/error";
 import { codetNotification } from "./lib/codet_notif";
 import { prettyError } from "@validation/base";
+import { mailTrackerRouter } from "./src/email/router";
+import { ROLES } from "@constants";
+import { IncomingMessage, ServerResponse } from "http";
 const envToLogger = {
   development: {
     transport: {
@@ -56,6 +59,9 @@ function err(
 }
 fastify.decorateReply("err", err);
 declare module "fastify" {
+  interface FastifyInstance {
+    ssec: SSEClient;
+  }
   interface FastifyReply {
     err: ErrMethod;
   }
@@ -67,6 +73,9 @@ fastify.addContentTypeParser(
     return result;
   }
 );
+
+type SSEClient = Map<number, { role: ROLES; conn: ServerResponse<IncomingMessage>[] }>;
+fastify.decorate<SSEClient>("ssec", new Map());
 
 export async function startServer() {
   try {
@@ -110,6 +119,7 @@ export async function startServer() {
     // public routes are registred here before auth middleware
     await fastify.register(publicRouter, { prefix: "/api" });
     await fastify.register(privateRouter, { prefix: "/api" });
+    await fastify.register(mailTrackerRouter, { prefix: "/m/t" });
     await fastify.after();
     const PORT = +(process.argv[2] ?? process.env.PORT ?? 3001);
     const serverConf =

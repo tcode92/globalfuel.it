@@ -13,6 +13,11 @@ class Message {
   ack(id: number) {
     return http.post(`/api/msg/ack`, { id });
   }
+  ackAllClient(clientId: number) {
+    return http.post(`/api/msg/ack-client`, {
+      clientId,
+    });
+  }
   getAck() {
     return http.get<models.message.Message[]>(`/api/msg/ack`);
   }

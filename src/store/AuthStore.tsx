@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { AccessToken } from "../../server/lib/jwt";
 import { ROLES } from "@constants";
+import { connect } from "@/api/sse";
 
 type Auth = {
   id: number;
@@ -22,6 +23,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       auth,
       authenticated: auth ? true : false,
     });
+    connect();
   },
   clearAuth() {
     set({

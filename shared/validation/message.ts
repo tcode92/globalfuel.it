@@ -15,3 +15,6 @@ export type MessageCreateInput = z.infer<typeof messageCreateSchema>;
 export const messageAckSchema = z.object({
   id: z.number().int().positive(),
 });
+export const messageAckClientSchema = z.object({
+  clientId: z.number().int().positive(),
+});

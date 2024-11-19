@@ -1,5 +1,9 @@
+import { msg } from "@/api/message";
 import { useMessagetStore } from "@/store/messageStore";
+import { models } from "@types";
+import { CheckIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { TiArrowForward } from "react-icons/ti";
 import { MessageIcon } from "../icons/MesageIcon";
 import { Button } from "../ui/button";
 import {
@@ -7,13 +11,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import Link from "next/link";
-import { models } from "@types";
-import { ArrowRight, CheckIcon } from "lucide-react";
-import { TiArrowForward } from "react-icons/ti";
-import { sendMessage } from "../sharedDialogs/NewMessageDialog";
-import { msg } from "@/api/message";
-import { MessagesModal, openMessages } from "./MessageModal";
+import { openMessages } from "./MessageModal";
 
 export const MessagesHeader = () => {
   const { toAck, getAck, messages } = useMessagetStore();

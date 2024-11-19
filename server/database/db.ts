@@ -7,6 +7,7 @@ import { note } from "./models/note";
 import { message } from "./models/message";
 import { staff } from "./models/staff";
 import { wwu } from "./models/wwu";
+import { mail } from "./models/mail";
 
 export const db = {
   auth,
@@ -17,5 +18,6 @@ export const db = {
   staff,
   dashboard,
   file,
-  wwu
+  wwu,
+  mail,
 };

@@ -8,6 +8,8 @@ import { dashboardRouter } from "./dashboard/router";
 import { noteRouter } from "./note/router";
 import { staffRouter } from "./staff/router";
 import { messageRouter } from "./message/router";
+import { mailPrivateRouter } from "./email/router";
+import { sseRouter } from "./sse/connection";
 
 const route: FastifyPluginAsync = async (api, opts) => {
   await api.register(authPlugin);
@@ -19,6 +21,8 @@ const route: FastifyPluginAsync = async (api, opts) => {
   await api.register(fileRouter, { prefix: "/files" });
   await api.register(staffRouter, { prefix: "/staff" });
   await api.register(messageRouter, { prefix: "/msg" });
+  await api.register(mailPrivateRouter, { prefix: "/mail" });
+  await api.register(sseRouter, { prefix: "/sse" });
 };
 
 export const privateRouter = route;

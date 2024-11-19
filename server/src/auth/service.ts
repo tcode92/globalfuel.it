@@ -24,7 +24,7 @@ export const authLoginService = async (data: AuthLoginInput) => {
     name: user.name,
     role: user.role,
     rv,
-    resetPassword: user.actions.resetPassword,
+    rp: user.actions.rp,
   };
 };
 
@@ -120,6 +120,7 @@ export const authForgotPasswordService = async (email: string) => {
       passwordResetUrl: `/reimposta-password?token=${emailToken}`,
     },
     to: auth.email,
+    from: "noreplay@globalfuel.it",
     subject: "Reimposta la tua password",
     text: `Hai richiesto di reimpostare la tua password.\nPer poter farlo vai al link seguente: https://${process.env.WEBSITE}/reimposta-password?&token=${emailToken}\nIl link è valido per 10 minuti.`,
   });
@@ -130,9 +131,10 @@ type EmailResetJWTPayload = {
   id: number;
 };
 
+// TODO: Remove this and infer return.
 export type LoginResponse = {
   id: number;
   role: "admin" | "agency";
   name: string;
-  resetPassword?: true;
+  rp?: true;
 };

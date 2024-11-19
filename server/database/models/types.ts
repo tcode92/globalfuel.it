@@ -3,7 +3,7 @@ export type AuthActions = {
   /**
    * If present we should force password reset somehow.
    */
-  resetPassword?: boolean;
+  rp?: boolean;
 };
 export namespace models {
   /**
@@ -80,7 +80,6 @@ export namespace models {
       state: ClientState;
       type: ClientType | null;
       vat: string;
-      toAck: number;
     };
     export type FullClient = {
       address: ClientAddress;
@@ -211,6 +210,27 @@ export namespace models {
       mime: string;
       type: FileType;
       clientId: number;
+    };
+  }
+  export namespace mail {
+    export type Mail = {
+      id: number;
+      from_address: string;
+      to_address: string;
+      subject: string;
+      status: "pending" | "sent" | "failed";
+      opened: number;
+      retry_count: number;
+      sent_at: string | null;
+      created_at: string;
+      updated_at: string;
+    };
+    export type Pagination = {
+      data: Mail[];
+      total: number;
+      page: number;
+      pageSize: number;
+      totalPages: number;
     };
   }
 }

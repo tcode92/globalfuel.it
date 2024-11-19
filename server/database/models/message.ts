@@ -19,10 +19,11 @@ export async function create(
 ) {
   const msgStm = `INSERT INTO messages (auth_id, message, client_id) VALUES ($1, $2, $3) RETURNING id, created_at;`;
   const msgValues = [authId, msg.message, msg.clientId];
-  const ackStm = `INSERT INTO message_ack (msg_id, auth_id, ack) VALUES ($1, $2, $3);`;
+  const ackStm = `INSERT INTO message_ack (msg_id, auth_id, client_id, ack) VALUES ($1, $2, $3, $4);`;
   const ackValues = (id: number) => [
     id,
     role !== "admin" ? null : agencyId,
+    msg.clientId,
     authId === agencyId,
   ];
   return await dbConn.transaction(async (tx) => {
@@ -44,11 +45,34 @@ export async function create(
   });
 }
 
+/**
+ *
+ * @param clientId Client id
+ * @param authId Null when auth is admin
+ */
+export async function ackAllClientMessages(
+  clientId: number,
+  authId: number | null
+) {
+  let stm;
+  let values = [];
+  if (authId) {
+    stm = `UPDATE message_ack SET ack = TRUE, ack_at = CURRENT_TIMESTAMP WHERE client_id = $1 AND auth_id = $2 AND ack_at IS NULL;`;
+    values = [clientId, authId];
+  } else {
+    stm = `UPDATE message_ack SET ack = TRUE, ack_at = CURRENT_TIMESTAMP WHERE client_id = $1 AND auth_id IS NULL AND ack_at IS NULL;`;
+    values = [clientId];
+  }
+  await dbConn.query(stm, values);
+  return true;
+}
+
 async function getClientMessages(
   clientId: number,
   authId: number,
   role: ROLES,
-  skip: number = 0
+  skip: number = 0,
+  limit: number = 100
 ) {
   const countStm = new Sql();
   countStm.add`SELECT COUNT(messages.id) AS total_messages FROM messages `;
@@ -113,14 +137,14 @@ async function getClientMessages(
   stm.add`WHERE ${whereClause}`;
   stm.add`
   ORDER BY messages.id DESC
-  LIMIT ${100} OFFSET ${skip};
+  LIMIT ${limit} OFFSET ${skip};
   `;
 
   const messages = await stm.execute<models.message.Message>();
   const count = await countStm.execute<{ total_messages: string }>();
   return {
     list: messages.rows,
-    hasMore: +count > 100 + skip,
+    hasMore: +count > limit + skip,
   };
 }
 
@@ -290,4 +314,5 @@ export const message = {
   getClientMessages,
   create,
   getToAckMessages,
+  ackAllClientMessages,
 };

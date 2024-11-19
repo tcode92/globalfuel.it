@@ -34,7 +34,6 @@ export const WorkWithUsForm = () => {
       consent: true,
     });
     if (!data.success) {
-      console.log(data.error);
       const errorFields = prettyError(data.error).fields;
       setErrors(errorFields as ZodErrorRecordString);
       setLoading(false);
@@ -128,7 +127,12 @@ export const WorkWithUsForm = () => {
           </Label>
         </InputWrapper>
       </div>
-      {success && <div className="col-span-2 w-full text-center font-bold text-green-700">Abbiamo ricevuto la tua richiesta, il nostro team ti contatterà al più presto!</div>}
+      {success && (
+        <div className="col-span-2 w-full text-center font-bold text-green-700">
+          Abbiamo ricevuto la tua richiesta, il nostro team ti contatterà al più
+          presto!
+        </div>
+      )}
       <Button
         variant={"blue"}
         className="self-end col-span-2"
