@@ -101,22 +101,31 @@ export const clientCreateService = async (
 export const clientCreateExternalService = async (
   client: ClientCreateUpdateInput
 ) => {
-  const newClient = await db.client.create(1, client); // 1 is the 'system' auth id.
-  const staff = await db.staff.get();
-  for (const user of staff) {
-    mailer.send({
-      template: "new-client",
-      data: {
-        clientLink: `/clienti/${newClient}`,
-        clientName: client.business,
-        name: user.name,
-      },
-      from: "noreplay@globalfuel.it",
-      to: user.email,
-      subject: "Notifica nuovo cliente",
-    });
+  try {
+    const newClient = await db.client.create(1, client); // 1 is the 'system' auth id.
+    const staff = await db.staff.get();
+    for (const user of staff) {
+      mailer.send({
+        template: "new-client",
+        data: {
+          clientLink: `/clienti/${newClient}`,
+          clientName: client.business,
+          name: user.name,
+        },
+        from: "noreplay@globalfuel.it",
+        to: user.email,
+        subject: "Notifica nuovo cliente",
+      });
+    }
+    return true;
+  } catch (e) {
+    if (e instanceof KnownError && e.errorMessage) {
+      if (e.cause === "client_vat_key") {
+        return true; // Fake success we have the vat already
+      }
+    }
+    throw e;
   }
-  return true;
 };
 
 export const clientUpdateService = async (

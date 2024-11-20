@@ -1,12 +1,14 @@
 import { ZodAny, ZodEnum, ZodString, z } from "zod";
 
 import {
+  CF_REGEX,
   ClientFG,
   ClientState,
   ClientType,
   PHONE2_REGEX,
   PHONE_REGEX,
   SDI_REGEX,
+  VAT_REGEX,
 } from "@constants";
 import { zEmail } from "./base";
 
@@ -25,9 +27,11 @@ export const ClientCreateUpdateSchema = z.object({
     })
   ),
   vat: EmptyString(
-    z.string({
-      required_error: "P.Iva mancante.",
-    })
+    z
+      .string({
+        required_error: "P.Iva mancante.",
+      })
+      .regex(VAT_REGEX, { message: "Partita iva non valida." })
   ),
   phone: EmptyString(
     z.string({
@@ -57,18 +61,36 @@ export const ClientCreateUpdateSchema = z.object({
       invalid_type_error: "PEC non valida.",
     })
   ),
-
-  business_start: EmptyStringOptionalNullable(z.string()).transform((arg) => {
-    if (arg) {
-      const parts = arg.split("/");
-      const date = new Date(`${parts[1]}-${parts[0]}-${parts[2]}`);
-      if (date.toString() === "Invalid Date") {
-        return undefined;
+  cf: EmptyStringOptionalNullable(
+    z
+      .string()
+      .trim()
+      .toUpperCase()
+      .regex(CF_REGEX, { message: "Codice fiscale non valido" })
+  ),
+  business_start: EmptyStringOptionalNullable(z.string()).transform(
+    (arg, ctx) => {
+      if (arg) {
+        const date = getDateFromStr(arg);
+        if (date.toString() === "Invalid Date") {
+          ctx.addIssue({
+            code: "invalid_date",
+            message: "Data non valida.",
+          });
+          return z.NEVER;
+        }
+        if (new Date() < date) {
+          ctx.addIssue({
+            code: "invalid_date",
+            message: "La data non può essere nel futuro.",
+          });
+          return z.NEVER;
+        }
+        return date;
       }
-      return date;
+      return arg;
     }
-    return arg;
-  }),
+  ),
   sdi: EmptyStringOptionalNullable(
     z.string().regex(SDI_REGEX, {
       message: "Codice SDI non valido.",
@@ -103,13 +125,6 @@ function EmptyStringOptionalNullable(string: ZodString) {
     if (typeof arg === "string" && arg.trim() === "") return null;
     return arg;
   }, string.optional().nullable());
-}
-
-function EmptyEnum<T extends [string, ...string[]]>(e: ZodEnum<T>) {
-  return z.preprocess((arg, ctx) => {
-    if (typeof arg === "string" && arg.trim() === "") return null;
-    return arg;
-  }, e);
 }
 
 export const ClientDeleteParams = z.object({
@@ -213,4 +228,13 @@ function sortableString() {
       if (arg.toLowerCase() === "desc") return "desc";
       return undefined;
     });
+}
+
+function getDateFromStr(str: string) {
+  if (str.includes("/")) {
+    const parts = str.split("/");
+    const date = new Date(`${parts[1]}-${parts[0]}-${parts[2]}`);
+    return date;
+  }
+  return new Date(str);
 }

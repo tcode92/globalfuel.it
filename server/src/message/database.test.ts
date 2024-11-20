@@ -5,19 +5,15 @@ import assert = require("node:assert");
 import { dbConn } from "../../database/connection";
 import { models } from "database/models/types";
 import { MessageCreateInput } from "@validation/message";
+import { ClientCreateUpdateInput } from "@validation/client";
 
 describe("Message Database Functions", async () => {
   const message: MessageCreateInput = {
     clientId: 0,
     message: "HELLO FROM THE OTHER SIDE",
   };
-
-  const clientData: models.client.ClientCreateInput = {
-    address: {
-      postalCode: "",
-      province: "",
-      street: "",
-    },
+  const clientData: ClientCreateUpdateInput = {
+    address: "",
     business: "test business",
     email: "testemail123@gmail.com",
     fg: "assoc.",
@@ -39,8 +35,10 @@ describe("Message Database Functions", async () => {
     assert.ok(id);
     message.clientId = id;
   });
-
-  await it("Should create a new message", async () => {
+  after(async () => {
+    await dbConn.end();
+  });
+  it("Should create a new message", async (t) => {
     const newMessage = await db.message.create(
       message,
       authId,
@@ -48,11 +46,9 @@ describe("Message Database Functions", async () => {
       authId
     );
     assert.ok(newMessage);
-    assert.deepStrictEqual(typeof newMessage, "number");
-    assert.deepStrictEqual(newMessage, 1);
-  });
-
-  after(async () => {
-    await dbConn.end();
+    assert.deepStrictEqual(typeof newMessage, "object");
+    assert.deepStrictEqual(newMessage.message, message.message);
+    assert.deepStrictEqual(newMessage.client_id, message.clientId);
+    assert.deepStrictEqual(newMessage.id, 1);
   });
 });

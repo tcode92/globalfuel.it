@@ -4,13 +4,10 @@ import { db } from "../../database/db";
 import { after, before, describe, it } from "node:test";
 import { dbConn } from "../../database/connection";
 import { models } from "database/models/types";
+import { ClientCreateUpdateInput } from "@validation/client";
 describe("Client Database Functions", () => {
-  const clientData: models.client.ClientCreateInput = {
-    address: {
-      postalCode: "",
-      province: "",
-      street: "",
-    },
+  const clientData: ClientCreateUpdateInput = {
+    address: "",
     business: "test business",
     email: "testemail@gmail.com",
     fg: "assoc.",

@@ -16,11 +16,7 @@ export async function genAuth() {
 }
 export function genClient() {
   const client: Omit<models.client.ClientCreateInput, "id" | "authId"> = {
-    address: {
-      postalCode: faker.location.zipCode(),
-      street: faker.location.street(),
-      province: faker.location.city(),
-    },
+    address: faker.location.streetAddress(),
     business: faker.company.name(),
     email: faker.internet.email().toLowerCase(),
     vat: faker.string.numeric(11),

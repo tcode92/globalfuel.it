@@ -2,7 +2,7 @@
 import { useState } from "react";
 import ExternalCardReqForm from "../clienti/ExternalCardRequest";
 
-export const CardForm = ({}: {}) => {
+export const CardForm = () => {
   const [done, setDone] = useState(false);
   if (done) {
     return (
@@ -14,7 +14,7 @@ export const CardForm = ({}: {}) => {
   }
   return (
     <>
-      <ExternalCardReqForm />
+      <ExternalCardReqForm onSuccess={() => setDone(true)} />
     </>
   );
 };

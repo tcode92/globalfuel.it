@@ -1,6 +1,7 @@
 import { ClientState, ClientType } from "@constants";
 import { http } from "./base";
 import { models } from "@types";
+import { ClientCreateUpdateInput } from "@validation/client";
 
 class Client {
   getClients(query?: string, agencyId?: number) {
@@ -20,13 +21,13 @@ class Client {
   deleteClient(id: number) {
     return http.delete<"OK">(`/api/clients/delete/${id}`);
   }
-  create(data: models.client.FullClient) {
+  create(data: ClientCreateUpdateInput) {
     return http.post<"OK">(`/api/clients`, data);
   }
-  createExternal(data: models.client.FullClient) {
+  createExternal(data: ClientCreateUpdateInput) {
     return http.post<"OK">(`/api/newclient`, data);
   }
-  update(id: number, data: models.client.FullClient) {
+  update(id: number, data: ClientCreateUpdateInput) {
     return http.put(`/api/clients/${id}`, data);
   }
   updateCode(id: number, code: string | null) {

@@ -1,20 +1,25 @@
 "use client";
 import { auth } from "@/api/auth";
-import { validatePassword } from "@constants";
+import { generatePassword, validatePassword } from "@constants";
 import { showMsg } from "@/lib/myutils";
 import { getFormDataFromEvent } from "@/utils/formdata";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DefaultMain from "../layout/DefaultMain";
 import { Label } from "recharts";
 import { InputPassword } from "../customComponents/PasswordInput";
 import { Button } from "../ui/button";
-
+import Link from "next/link";
+import Image from "next/image";
+import logo from "@public/logo.png";
 export const PasswordResetPage = () => {
   const [token, setToken] = useState<string | null | undefined>(undefined);
   const query = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const [autoGen, setAutoGen] = useState(false);
+  const passRef = useRef<HTMLInputElement>(null);
+  const confPassRef = useRef<HTMLInputElement>(null);
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!token) {
@@ -76,44 +81,82 @@ export const PasswordResetPage = () => {
           </>
         )}
         {typeof token === "string" && (
-          <div className="max-w-[500px] w-full flex items-center flex-col">
-            <div className="text-center text-blux text-2xl font-bold uppercase">
-              Reimposta password
-            </div>
-            <p className="text-center text-sm mt-4">
-              La password deve essere almeno 8 caratteri, una lettera maiuscola,
-              una lettera minuscola, un numero e un carattere speciale tra:
-              <br /> , ; . : - _ ! &apos; &quot; £ $ % & ( ) = ? ^ § ] [ &gt;
-              &lt; @ ° #
-            </p>
-            <form
-              onSubmit={handleSubmit}
-              className="flex gap-4 flex-col max-w-64 w-full mt-4"
-            >
-              <div>
-                <Label>Nuova password</Label>
-                <InputPassword
-                  type="password"
-                  name="password"
-                  id="password"
-                  autoComplete="new-password"
-                />
+          <div className="h-full flex items-center justify-center max-w-full w-[500px] flex-col p-6 bg-white rounded-xl shadow-xl">
+            <Link href="/">
+              <div className="flex flex-col items-center gap-3 text-2xl font-bold uppercase text-blux-500">
+                <Image src={logo} alt="Logo" height={50} />
+                Reimposta password
               </div>
-              <div>
-                <Label>Conferma password</Label>
-                <InputPassword
-                  type="password"
-                  name="passwordConfirm"
-                  id="password-confirm"
-                  autoComplete="new-password"
-                />
+            </Link>
+            <div className="max-w-[500px] w-full flex items-center flex-col">
+              <p className="text-center text-sm mt-4">
+                La password deve essere almeno 8 caratteri, una lettera
+                maiuscola, una lettera minuscola, un numero e un carattere
+                speciale tra:
+                <br /> , ; . : - _ ! &apos; &quot; £ $ % & ( ) = ? ^ § ] [ &gt;
+                &lt; @ ° #
+              </p>
+              <div className="flex flex-col items-center gap-2 my-2">
+                <Button
+                  variant={"blue"}
+                  size={"sm"}
+                  onClick={() => {
+                    const p = generatePassword(16);
+                    if (passRef.current) passRef.current.value = p;
+                    if (confPassRef.current) confPassRef.current.value = p;
+                    setAutoGen(true);
+                  }}
+                >
+                  Password casuale
+                </Button>
+                <Button
+                  variant={"blue"}
+                  size={"sm"}
+                  disabled={!autoGen}
+                  onClick={async () => {
+                    if (passRef.current) {
+                      navigator.clipboard
+                        .writeText(passRef.current.value)
+                        .then(() => showMsg("Password copiata", "success"));
+                    }
+                  }}
+                >
+                  Copia password
+                </Button>
               </div>
-              {error && <p className="text-red-500 text-center">{error}</p>}
+              <form
+                onSubmit={handleSubmit}
+                className="flex gap-4 flex-col max-w-64 w-full mt-4"
+              >
+                <div>
+                  <Label>Nuova password</Label>
+                  <InputPassword
+                    ref={passRef}
+                    type="password"
+                    name="password"
+                    id="password"
+                    placeholder="Nuova password"
+                    autoComplete="new-password"
+                  />
+                </div>
+                <div>
+                  <Label>Conferma password</Label>
+                  <InputPassword
+                    ref={confPassRef}
+                    type="password"
+                    name="passwordConfirm"
+                    id="password-confirm"
+                    placeholder="Conferma nuova password"
+                    autoComplete="new-password"
+                  />
+                </div>
+                {error && <p className="text-red-500 text-center">{error}</p>}
 
-              <Button type="submit" variant={"blue"}>
-                Conferma
-              </Button>
-            </form>
+                <Button type="submit" variant={"blue"}>
+                  Conferma
+                </Button>
+              </form>
+            </div>
           </div>
         )}
       </DefaultMain>

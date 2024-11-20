@@ -92,12 +92,6 @@ const HomePage = () => {
         className="flex items-center my-12 flex-col bg-white w-full p-4 rounded-md shadow-md mx-auto justify-center scroll-m-20"
         id="req-card"
       >
-        <h2 className="text-4xl font-bold bg-gradient-to-r from-blux to-orangex bg-clip-text text-transparent max-w-4xl text-center mt-4">
-          Inserisci i dati per richiedere la tua carta carburante.
-        </h2>
-        <p className="mb-6 mt-4">
-          I campi contrassegnati con <IRStatic /> sono obbligatori.
-        </p>
         <CardForm />
       </section>
     </main>

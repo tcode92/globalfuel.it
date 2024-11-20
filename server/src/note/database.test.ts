@@ -4,6 +4,7 @@ import { describe, before, after, it } from "node:test";
 import assert from "node:assert";
 import { dbConn } from "../../database/connection";
 import { models } from "database/models/types";
+import { ClientCreateUpdateInput } from "@validation/client";
 describe("Note Database Functions", () => {
   const authData: models.auth.AuthCreateInput = {
     email: "authnotetest@email.com",
@@ -11,12 +12,8 @@ describe("Note Database Functions", () => {
     password: "test-password",
     role: "admin",
   };
-  const clientData: models.client.ClientCreateInput = {
-    address: {
-      postalCode: "",
-      province: "",
-      street: "",
-    },
+  const clientData: ClientCreateUpdateInput = {
+    address: "",
     business: "",
     email: "",
     fg: "assoc.",

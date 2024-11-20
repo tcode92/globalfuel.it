@@ -1,18 +1,11 @@
 import { client } from "@/api/clients";
 import { getFormDataFromEvent } from "@/utils/formdata";
-import {
-  CF_REGEX,
-  CLIENT_FG,
-  EMAIL_REGEX,
-  PHONE2_REGEX,
-  SDI_REGEX,
-  VAT_REGEX,
-  isEmpty,
-  isValidDate,
-  isValidPhone,
-  transformDate
-} from "@constants";
+import { CLIENT_FG, transformDate } from "@constants";
 import { models } from "@types";
+import {
+  ClientCreateUpdateInput,
+  ClientCreateUpdateSchema,
+} from "@validation/client";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import InputError from "../customComponents/InputError";
@@ -22,13 +15,11 @@ import { SelectCustom } from "../customComponents/Select";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { typeToFlattenedError } from "zod";
 
-type OptionsFlags<Type> = {
-  [Property in keyof Type]?: Type[Property] extends object
-    ? OptionsFlags<Type[Property]> // If the property is an object, recursively apply OptionsFlags
-    : string; // Otherwise, the value is a string
-};
-export type ClientErrors = OptionsFlags<models.client.FullClient>;
+type ClientErrors = Partial<
+  typeToFlattenedError<ClientCreateUpdateInput>["fieldErrors"]
+>;
 export default function CreateEditClientForm({
   data,
   onValidData,
@@ -63,14 +54,10 @@ export default function CreateEditClientForm({
     setError({});
     const formData = getFormDataFromEvent<models.client.FullClient>(e);
     // validate form
-    const errs = validateClient(formData);
-    if (Object.keys(errs).length > 0) {
-      setError(errs);
-      setLoading(false);
-      return;
+    const clientData = ClientCreateUpdateSchema.safeParse(formData);
+    if (!clientData.success) {
+      setError(clientData.error.formErrors.fieldErrors);
     } else {
-      // this is used to handle the submission of the form externally.
-      // if onValidData is present submitting the data to the server is on you
       if (onValidData) {
         const errors = await onValidData(formData);
         if (typeof errors === "object") {
@@ -82,21 +69,22 @@ export default function CreateEditClientForm({
       // submitform
       const action =
         data && data.id
-          ? client.update(data.id, formData)
-          : client.create(formData);
+          ? client.update(data.id, clientData.data)
+          : client.create(clientData.data);
       const { success, error, data: response } = await action.request;
       if (success) {
         router.back();
+        return;
       } else {
         if (response?.error && response.error.fields) {
           setError(response.error.fields);
-          setLoading(false);
         } else {
           error.display();
-          setLoading(false);
         }
       }
     }
+
+    setLoading(false);
   }
   const labelClass = "text-left";
   return (
@@ -196,36 +184,6 @@ export default function CreateEditClientForm({
         />
         <InputError>{error.business_start}</InputError>
       </InputWrapper>
-      {/* fax */}
-      <InputWrapper>
-        <Label htmlFor="fax" className={labelClass}>
-          Fax
-        </Label>
-        <Input
-          id="fax"
-          name="fax"
-          defaultValue={data?.fax || undefined}
-          onChange={() => {
-            removeErr("fax");
-          }}
-        />
-        <InputError>{error.fax}</InputError>
-      </InputWrapper>
-      {/* pec */}
-      <InputWrapper>
-        <Label htmlFor="pec" className={labelClass}>
-          PEC
-        </Label>
-        <Input
-          id="pec"
-          name="pec"
-          defaultValue={data?.pec || undefined}
-          onChange={() => {
-            removeErr("pec");
-          }}
-        />
-        <InputError>{error.pec}</InputError>
-      </InputWrapper>
       {/* sdi */}
       <InputWrapper>
         <Label htmlFor="sdi" className={labelClass}>
@@ -241,6 +199,23 @@ export default function CreateEditClientForm({
         />
         <InputError>{error.sdi}</InputError>
       </InputWrapper>
+
+      {/* pec */}
+      <InputWrapper>
+        <Label htmlFor="pec" className={labelClass}>
+          PEC
+        </Label>
+        <Input
+          id="pec"
+          name="pec"
+          defaultValue={data?.pec || undefined}
+          onChange={() => {
+            removeErr("pec");
+          }}
+        />
+        <InputError>{error.pec}</InputError>
+      </InputWrapper>
+
       {/* FG */}
       <InputWrapper>
         <Label htmlFor="fg" className={labelClass}>
@@ -258,15 +233,45 @@ export default function CreateEditClientForm({
         />
         <InputError>{error.fg}</InputError>
       </InputWrapper>
+      <InputWrapper>
+        <Label htmlFor="cf" className={labelClass}>
+          Codice fiscale
+        </Label>
+        <Input
+          id="cf"
+          name="cf"
+          defaultValue={data?.cf ?? ""}
+          onChange={() => {
+            removeErr("cf");
+          }}
+        />
+        <InputError>{error.cf}</InputError>
+      </InputWrapper>
+      {/* fax */}
+      <InputWrapper>
+        <Label htmlFor="fax" className={labelClass}>
+          Fax
+        </Label>
+        <Input
+          id="fax"
+          name="fax"
+          defaultValue={data?.fax || undefined}
+          onChange={() => {
+            removeErr("fax");
+          }}
+        />
+        <InputError>{error.fax}</InputError>
+      </InputWrapper>
       <div className="col-span-2 w-full font-bold text-blux-600">Consumi</div>
       <InputWrapper>
-        <Label htmlFor="phone" className={labelClass}>
+        <Label htmlFor="liters" className={labelClass}>
           Litri/mese
         </Label>
         <Input
           id="liters"
           name="liters"
           type="number"
+          defaultValue={data?.liters ?? ""}
           onChange={() => {
             removeErr("liters");
           }}
@@ -274,13 +279,14 @@ export default function CreateEditClientForm({
         <InputError>{error.liters}</InputError>
       </InputWrapper>
       <InputWrapper>
-        <Label htmlFor="phone" className={labelClass}>
+        <Label htmlFor="amount" className={labelClass}>
           Euro/mese
         </Label>
         <Input
           id="amount"
           name="amount"
           type="number"
+          defaultValue={data?.amount ?? ""}
           onChange={() => {
             removeErr("amount");
           }}
@@ -299,51 +305,4 @@ export default function CreateEditClientForm({
       </div>
     </form>
   );
-}
-function validateClient(client: Partial<models.client.FullClient>) {
-  let errors: ClientErrors = {};
-
-  if (isEmpty(client.business)) {
-    errors.business = "Ragione sociale mancante.";
-  }
-  if (isEmpty(client.vat)) {
-    errors.vat = "P.Iva mancante.";
-  }
-  if (isEmpty(client.email)) {
-    errors.email = "Email mancante.";
-  }
-  if (!isEmpty(client.email) && !EMAIL_REGEX.test(client.email?.trim() || "")) {
-    errors.email = "Email non valida.";
-  }
-  if (!isEmpty(client.pec) && !EMAIL_REGEX.test(client.pec?.trim() || "")) {
-    errors.pec = "PEC non valida.";
-  }
-  if (!isEmpty(client.vat) && !VAT_REGEX.test(client.vat?.trim() || "")) {
-    errors.vat = "P.Iva non corretta.";
-  }
-  if (!isEmpty(client.cf) && !CF_REGEX.test(client.cf?.trim() || "")) {
-    errors.cf = "Codice fiscale non valido.";
-  }
-  if (isEmpty(client.phone)) {
-    errors.phone = "Telefono mancante.";
-  }
-  if (!isEmpty(client.phone) && !isValidPhone(client.phone)) {
-    errors.phone = "Telefono non valido.";
-  }
-  if (
-    !isEmpty(client.fax) &&
-    !PHONE2_REGEX.test(client.fax?.replaceAll(" ", "") || "")
-  ) {
-    errors.fax = "Fax non valido.";
-  }
-  if (!isEmpty(client.sdi) && !SDI_REGEX.test(client.sdi || "")) {
-    errors.sdi = "Codice SDI non valido.";
-  }
-  if (isEmpty(client.address)) {
-    errors.address = "Indirizzo mancante.";
-  }
-  if (!isEmpty(client.business_start) && !isValidDate(client.business_start)) {
-    errors.business_start = "Data non valida.";
-  }
-  return errors;
 }

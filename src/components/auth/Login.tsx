@@ -15,7 +15,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useSearchParams } from "next/navigation";
 export default function Login({ onLoggedIn }: { onLoggedIn?: () => void }) {
-  const query = useSearchParams()
+  const query = useSearchParams();
   const [errors, setErrors] = useState<Record<string, string | null>>({
     email: null,
     password: null,
@@ -43,9 +43,6 @@ export default function Login({ onLoggedIn }: { onLoggedIn?: () => void }) {
   return (
     <>
       <DefaultMain className="flex items-center justify-center flex-row min-w-full h-full flex-1">
-        <Head>
-          <title>Accedi</title>
-        </Head>
         <div className="h-full flex items-center justify-center max-w-full w-[500px] flex-col p-6 bg-white rounded-xl shadow-xl">
           <Link href="/">
             <div className="flex flex-col items-center gap-3 text-4xl font-bold uppercase text-blux-500">

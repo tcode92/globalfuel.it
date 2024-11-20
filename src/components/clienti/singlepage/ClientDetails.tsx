@@ -26,7 +26,7 @@ export default function ClientDetails({
       <CardTitle>
         Dettagli
         <LinkButton
-          href={`/clienti/modifica/${client.id}`}
+          href={`/clienti/${client.id}/modifica`}
           className="text-blux text-xs ml-4"
           variant={"outline"}
         >
@@ -54,6 +54,23 @@ export default function ClientDetails({
               <ClientDetailValue>{client.vat}</ClientDetailValue>
             </ClientDetail>
             <ClientDetail>
+              <ClientDetailItem>Consumi litri/mese</ClientDetailItem>
+              <ClientDetailValue>{client.liters}</ClientDetailValue>
+            </ClientDetail>
+            <ClientDetail>
+              <ClientDetailItem>Consumi euro/mese</ClientDetailItem>
+              <ClientDetailValue>{client.amount}</ClientDetailValue>
+            </ClientDetail>
+
+            <ClientDetail>
+              <ClientDetailItem>Telefono</ClientDetailItem>
+              <ClientDetailValue phone>{client.phone}</ClientDetailValue>
+            </ClientDetail>
+            <ClientDetail>
+              <ClientDetailItem>Email</ClientDetailItem>
+              <ClientDetailValue email>{client.email}</ClientDetailValue>
+            </ClientDetail>
+            <ClientDetail>
               <ClientDetailItem>Codice fiscale</ClientDetailItem>
               <ClientDetailValue>{client.cf}</ClientDetailValue>
             </ClientDetail>
@@ -65,19 +82,11 @@ export default function ClientDetails({
               <ClientDetailItem>Tipo</ClientDetailItem>
               <ClientDetailValue>{client.type}</ClientDetailValue>
             </ClientDetail>
-            <ClientDetail>
-              <ClientDetailItem>Telefono</ClientDetailItem>
-              <ClientDetailValue phone>{client.phone}</ClientDetailValue>
-            </ClientDetail>
-            <ClientDetail>
-              <ClientDetailItem>Email</ClientDetailItem>
-              <ClientDetailValue email>{client.email}</ClientDetailValue>
-            </ClientDetail>
+
             <ClientDetail>
               <ClientDetailItem>PEC</ClientDetailItem>
               <ClientDetailValue>{client.pec}</ClientDetailValue>
             </ClientDetail>
-
             <ClientDetail>
               <ClientDetailItem>Fax</ClientDetailItem>
               <ClientDetailValue>{client.fax}</ClientDetailValue>
@@ -87,25 +96,13 @@ export default function ClientDetails({
               <ClientDetailValue>{client.fg}</ClientDetailValue>
             </ClientDetail>
             <ClientDetail>
-              <ClientDetailItem>Indirizzo</ClientDetailItem>
-              <div className="flex gap-1 flex-wrap">
-                <ClientDetailValue copy={false}>
-                  {client.address.street}
-                </ClientDetailValue>
-                <ClientDetailValue copy={false}>
-                  {client.address.province}
-                </ClientDetailValue>
-                <ClientDetailValue copy={false}>
-                  {client.address.postalCode}
-                </ClientDetailValue>
-              </div>
+              <ClientDetailItem>Sede</ClientDetailItem>
+              <ClientDetailValue>{client.address}</ClientDetailValue>
             </ClientDetail>
-
             <ClientDetail>
               <ClientDetailItem>Codice SDI</ClientDetailItem>
               <ClientDetailValue>{client.sdi}</ClientDetailValue>
             </ClientDetail>
-
             <ClientDetail>
               <ClientDetailItem>Inizio attività</ClientDetailItem>
               <ClientDetailValue>

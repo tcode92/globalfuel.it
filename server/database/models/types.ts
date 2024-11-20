@@ -29,21 +29,16 @@ export namespace models {
     export type StaffContact = { id: number; name: string; email: string };
   }
   export namespace client {
-    type ClientAddress = {
-      street: string;
-      postalCode: string;
-      province: string;
-    };
     export type ClientDB = {
       id: number;
       code: string | null;
-      address: ClientAddress;
+      address: string;
       business_start: string | Date | null;
       auth_id: number;
       created_at: string;
       updated_at: string;
       cf: string | null;
-      fg: ClientFG;
+      fg: ClientFG | null;
       state: ClientState;
       type: ClientType | null;
       sdi: string | null;
@@ -52,7 +47,7 @@ export namespace models {
       email: string;
       vat: string;
       phone: string;
-      pec: string;
+      pec: string | null;
     };
     export type ClientCreateInput = {
       business: string;
@@ -82,6 +77,8 @@ export namespace models {
       state: ClientState;
       type: ClientType | null;
       vat: string;
+      liters: string | null;
+      amount: string | null;
     };
     export type FullClient = {
       address: string;

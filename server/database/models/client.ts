@@ -21,7 +21,7 @@ async function create(authId: number, client: ClientCreateUpdateInput) {
       rows: [newClient],
     } = await dbConn.query<{ id: number }>(
       `INSERT INTO client
-      (business, email, vat, phone, pec, address, fg, state, type, business_start, cf, fax, liters, euro, auth_id)
+      (business, email, vat, phone, pec, address, fg, state, type, business_start, cf, fax, liters, amount, auth_id)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING id;`,
       [
         data.business,
@@ -45,7 +45,7 @@ async function create(authId: number, client: ClientCreateUpdateInput) {
   } catch (e) {
     if (e instanceof DatabaseError) {
       if (e.code === "23505" && e.constraint === "client_vat_key") {
-        throw new KnownError(
+        const customErr = new KnownError(
           [
             `Il cliente con p.iva ${client.vat} esiste già.`,
             `Non è possibile creare un nuovo cliente.`,
@@ -53,6 +53,8 @@ async function create(authId: number, client: ClientCreateUpdateInput) {
           "error",
           409
         );
+        customErr.cause = "client_vat_key";
+        throw customErr;
       }
     }
     throw e;
@@ -125,6 +127,8 @@ async function getClientsTable(
     c.business,
     c.phone,
     c.email,
+    c.liters,
+    c.amount,
     a.name as agency_name,
     a.id as auth_id,
     c.state,
@@ -219,6 +223,8 @@ async function getOne(
     c."type",
     c.updated_at,
     c.vat,
+    c.liters,
+    c.amount,
     ${includeAgency ? Sql.sql`a."name" as agency_name,` : Sql.EMPTY}
     (
       SELECT
