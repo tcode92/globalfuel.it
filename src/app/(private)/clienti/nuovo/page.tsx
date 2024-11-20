@@ -1,20 +1,17 @@
 "use client";
 import CreateEditClientForm from "@/components/clienti/CreateEditClientForm";
 import DefaultMain from "@/components/layout/DefaultMain";
+import { HeadMeta } from "@/components/layout/HeadMeta";
 import { Protected } from "@/components/layout/Protected";
 import { useAuthStore } from "@/store/AuthStore";
 
-import Head from "next/head";
 import Link from "next/link";
-import React from "react";
 
 export default function NewClient() {
   const { auth } = useAuthStore();
   return (
     <Protected>
-      <Head>
-        <title>Nuovo cliente</title>
-      </Head>
+      <HeadMeta title="Nuovo client | Petrol Service S.R.L." />
       <DefaultMain>
         <div className="w-[100%] max-w-[800px] my-4 mx-auto">
           <h1 className="text-2xl text-blux-600 font-bold">Nuovo cliente</h1>

@@ -1,26 +1,15 @@
-import { ZodEnum, ZodString, z } from "zod";
+import { ZodAny, ZodEnum, ZodString, z } from "zod";
 
-import { ClientFG, ClientState, ClientType } from "@constants";
+import {
+  ClientFG,
+  ClientState,
+  ClientType,
+  PHONE2_REGEX,
+  PHONE_REGEX,
+  SDI_REGEX,
+} from "@constants";
 import { zEmail } from "./base";
-import { CF_REGEX, PHONE2_REGEX, PHONE_REGEX, SDI_REGEX } from "@constants";
 
-const AddressSchema = z.object({
-  province: EmptyString(
-    z.string({
-      required_error: "Provincia mancante.",
-    })
-  ),
-  postalCode: EmptyString(
-    z.string({
-      required_error: "CAP mancante.",
-    })
-  ),
-  street: EmptyString(
-    z.string({
-      required_error: "Indirizzo mancante.",
-    })
-  ),
-});
 export const ClientCreateUpdateSchema = z.object({
   business: EmptyString(
     z.string({
@@ -53,25 +42,22 @@ export const ClientCreateUpdateSchema = z.object({
       });
     }
   }),
-  address: AddressSchema,
-  pec: EmptyString(
+  address: z
+    .string({ message: "Sede non valida" })
+    .min(1, { message: "Sede mancante." }),
+  fax: EmptyStringOptionalNullable(
+    z.string().regex(PHONE2_REGEX, {
+      message: "Telefono non valido.",
+    })
+  ),
+  pec: EmptyStringOptionalNullable(
     zEmail({
       invalid_error: "PEC non valida.",
       required_error: "PEC mancante.",
       invalid_type_error: "PEC non valida.",
     })
   ),
-  fg: EmptyEnum(
-    z.enum(ClientFG, {
-      invalid_type_error: "Forma giuridica non valida.",
-      required_error: "Seleziona forma giuridica.",
-    })
-  ),
-  sdi: EmptyStringOptionalNullable(
-    z.string().regex(SDI_REGEX, {
-      message: "Codice SDI non valido.",
-    })
-  ),
+
   business_start: EmptyStringOptionalNullable(z.string()).transform((arg) => {
     if (arg) {
       const parts = arg.split("/");
@@ -83,36 +69,49 @@ export const ClientCreateUpdateSchema = z.object({
     }
     return arg;
   }),
-  cf: EmptyStringOptionalNullable(
-    z.string().regex(CF_REGEX, {
-      message: "Codice fiscale non valido.",
+  sdi: EmptyStringOptionalNullable(
+    z.string().regex(SDI_REGEX, {
+      message: "Codice SDI non valido.",
     })
   ),
-  fax: EmptyStringOptionalNullable(
-    z.string().regex(PHONE2_REGEX, {
-      message: "Telefono non valido.",
-    })
-  ),
+  fg: z.preprocess((arg) => {
+    if (!arg) return null;
+    if (typeof arg === "string" && arg.trim() === "") return null;
+    return arg;
+  }, z.enum(ClientFG).optional().nullable()),
+  liters: z.preprocess((arg) => {
+    if (!arg) return undefined;
+    return arg;
+  }, z.number({ coerce: true, message: "Valore non valido" }).min(1, { message: "Solo valori maggiori di 0" }).optional()),
+  amount: z.preprocess((arg) => {
+    if (!arg) return undefined;
+    return arg;
+  }, z.number({ coerce: true, message: "Valore non valido" }).min(1, { message: "Solo valori maggiori di 0" }).optional()),
 });
+
 export type ClientCreateUpdateInput = z.infer<typeof ClientCreateUpdateSchema>;
+
 function EmptyString(string: ZodString) {
   return z.preprocess((arg, ctx) => {
     if (typeof arg === "string" && arg.trim() === "") return undefined;
     return arg;
   }, string);
 }
+
 function EmptyStringOptionalNullable(string: ZodString) {
   return z.preprocess((arg, ctx) => {
     if (typeof arg === "string" && arg.trim() === "") return null;
     return arg;
   }, string.optional().nullable());
 }
+
 function EmptyEnum<T extends [string, ...string[]]>(e: ZodEnum<T>) {
   return z.preprocess((arg, ctx) => {
     if (typeof arg === "string" && arg.trim() === "") return null;
     return arg;
   }, e);
 }
+
 export const ClientDeleteParams = z.object({
   id: z.string().transform((arg, ctx) => {
     const n = parseInt(arg);
@@ -128,9 +127,11 @@ export const ClientDeleteParams = z.object({
     return n;
   }),
 });
+
 export const ClientUpdateStateSchema = z.object({
   state: z.enum(ClientState),
 });
+
 export type ClientUpdateStateInput = z.infer<typeof ClientUpdateStateSchema>;
 
 export const ClientUpdateTypeSchema = z.object({

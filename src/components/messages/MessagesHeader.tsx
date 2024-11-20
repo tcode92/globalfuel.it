@@ -18,7 +18,6 @@ export const MessagesHeader = () => {
   const [open, setOpen] = useState(false);
   useEffect(() => {
     const abort = getAck();
-
     return () => {
       abort();
     };

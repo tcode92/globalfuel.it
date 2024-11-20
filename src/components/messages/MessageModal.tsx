@@ -94,7 +94,7 @@ export const MessagesModal = ({
     return () => {
       if (a) a();
     };
-  }, [data.list, initialOpenAck]);
+  }, [data.list, initialOpenAck, ackAllClientMessages, clientId]);
   useEffect(() => {
     document.body.classList.add("no-scroll");
     const handler = (ev: CustomEvent<models.message.Message>) => {
@@ -111,7 +111,7 @@ export const MessagesModal = ({
       window.removeEventListener("chat", handler as any);
       document.body.classList.remove("no-scroll");
     };
-  }, []);
+  }, [clientId]);
 
   return (
     <div className="bd max-w-[100vw] p-4">
@@ -185,11 +185,12 @@ function Message({
 }) {
   const t = useMemo(() => timeSince(message.created_at), [message.created_at]);
   useEffect(() => {
-    if (message.ack) return;
+    if (message.ack === null) return;
+    if (message.ack === true) return;
     const { request, abort } = msg.ack(message.id);
     request.then(() => ack(message.id));
     return () => abort();
-  }, [message.ack]);
+  }, [message.ack, ack, message.id]);
   return (
     <div
       className={cn(

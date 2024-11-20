@@ -6,7 +6,7 @@ const privateRoute: FastifyPluginAsync = async (api, opts) => {
 };
 
 const route: FastifyPluginAsync = async (server, opts) => {
-  server.get("/:trackId", trackEmailOpenHandler);
+  server.get("/:trackId/*", trackEmailOpenHandler);
 };
 
 export const mailTrackerRouter = route;

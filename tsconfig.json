@@ -35,5 +35,5 @@
     "src/next-env.d.ts",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "server", "email-templates"]
+  "exclude": ["node_modules", "server", "email-templates", ".old", ".dist"]
 }

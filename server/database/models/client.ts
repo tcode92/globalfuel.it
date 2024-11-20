@@ -4,11 +4,12 @@ import { models } from "./types";
 import { KnownError } from "../../utils/error";
 
 import { ClientState, ClientType, FILETYPE } from "@constants";
+import { ClientCreateUpdateInput } from "@validation/client";
 
-async function create(authId: number, client: models.client.ClientCreateInput) {
+async function create(authId: number, client: ClientCreateUpdateInput) {
   const data = Object.assign<
     Partial<models.client.ClientCreateInput>,
-    models.client.ClientCreateInput
+    ClientCreateUpdateInput
   >(
     {
       state: "In Lavorazione",
@@ -20,8 +21,8 @@ async function create(authId: number, client: models.client.ClientCreateInput) {
       rows: [newClient],
     } = await dbConn.query<{ id: number }>(
       `INSERT INTO client
-      (business, email, vat, phone, pec, address, fg, state, type, business_start, cf, fax, auth_id)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id;`,
+      (business, email, vat, phone, pec, address, fg, state, type, business_start, cf, fax, liters, euro, auth_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING id;`,
       [
         data.business,
         data.email,
@@ -35,6 +36,8 @@ async function create(authId: number, client: models.client.ClientCreateInput) {
         data.business_start,
         data.cf,
         data.fax,
+        data.liters,
+        data.amount,
         authId,
       ]
     );
@@ -433,5 +436,5 @@ export const client = {
   getCurrentState,
   getCurrentType,
   getAgency,
-  getClientAgencyInfo
+  getClientAgencyInfo,
 };

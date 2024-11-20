@@ -221,7 +221,7 @@ type DefaultEmailData = {
   subject: string;
   to: string;
   text?: string;
-  from: "notifiche@globalfuel.it" | "noreplay@globalfuel.it";
+  from: "noreplay@globalfuel.it";
   files?: { path: string; name: string }[];
 };
 type NewAccountTemplate = {

@@ -111,7 +111,7 @@ export const clientCreateExternalService = async (
         clientName: client.business,
         name: user.name,
       },
-      from: "notifiche@globalfuel.it",
+      from: "noreplay@globalfuel.it",
       to: user.email,
       subject: "Notifica nuovo cliente",
     });
@@ -151,7 +151,7 @@ export const clientUpdateStateService = async (
         title: "Modifica stato cliente",
       },
       to: agency.email,
-      from: "notifiche@globalfuel.it",
+      from: "noreplay@globalfuel.it",
       subject: "Modifica stato cliente",
     });
   }
@@ -187,7 +187,7 @@ export const clientUpdateTypeService = async (
 
     mailer.send({
       template: "text",
-      from: "notifiche@globalfuel.it",
+      from: "noreplay@globalfuel.it",
       data: {
         name: newClient.agency_name,
         text: `Il tipo del cliente ${newClient?.business} è stato ${text}.`,
@@ -238,7 +238,7 @@ export const clientUpdateCodeService = async (
     },
     subject: "Codice Carta",
     to: agency.email,
-    from: "notifiche@globalfuel.it",
+    from: "noreplay@globalfuel.it",
     text: text,
   });
   return newClient;

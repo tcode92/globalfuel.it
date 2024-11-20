@@ -1,11 +1,11 @@
 import { auth } from "@/api/auth";
-import { validatePassword } from "@constants";
+import { generatePassword, validatePassword } from "@constants";
 import { showMsg } from "@/lib/myutils";
 import { getUniqueId } from "@/lib/utils";
 import { addDialog, removeDialog } from "@/store/DialogsUiStore";
 import { getFormDataFromEvent } from "@/utils/formdata";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import InputWrapper from "../customComponents/InputWrapper";
 import { InputPassword } from "../customComponents/PasswordInput";
 import { Button } from "../ui/button";
@@ -32,6 +32,9 @@ function ResetPassword({
   const router = useRouter();
   const [open, setOpen] = useState(true);
   const [error, setError] = useState<string | undefined>(undefined);
+  const confPassRef = useRef<HTMLInputElement>(null);
+  const passRef = useRef<HTMLInputElement>(null);
+  const [autoGen, setAutoGen] = useState(false);
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(undefined);
@@ -104,10 +107,39 @@ function ResetPassword({
             tra: <br /> (, ; . : - _ ! &apos; &quot; £ $ % & ( ) = ? ^ § ] [
             &gt; &lt; @ ° #)
           </DialogDescription>
+          <div className="flex flex-col items-center gap-2">
+            <Button
+              variant={"blue"}
+              size={"sm"}
+              onClick={() => {
+                const p = generatePassword(16);
+                if (passRef.current) passRef.current.value = p;
+                if (confPassRef.current) confPassRef.current.value = p;
+                setAutoGen(true);
+              }}
+            >
+              Password casuale
+            </Button>
+            <Button
+              variant={"blue"}
+              size={"sm"}
+              disabled={!autoGen}
+              onClick={async () => {
+                if (passRef.current) {
+                  navigator.clipboard
+                    .writeText(passRef.current.value)
+                    .then(() => showMsg("Password copiata", "success"));
+                }
+              }}
+            >
+              Copia password
+            </Button>
+          </div>
           <form onSubmit={handleSubmit} className="flex gap-4 flex-col">
             <InputWrapper>
               <Label>Password</Label>
               <InputPassword
+                ref={passRef}
                 type="password"
                 name="password"
                 id="password"
@@ -117,6 +149,7 @@ function ResetPassword({
             <InputWrapper>
               <Label>Conferma password</Label>
               <InputPassword
+                ref={confPassRef}
                 type="password"
                 name="passwordConfirm"
                 id="password-confirm"

@@ -1,4 +1,4 @@
-
+\set ON_ERROR_STOP 1
 -- Drop the table if it exists
 DROP TABLE IF EXISTS "auth" CASCADE;
 DROP INDEX IF EXISTS idx_auth_email;
@@ -35,14 +35,8 @@ CREATE TABLE "client" (
     email VARCHAR NOT NULL,
     vat VARCHAR(11) NOT NULL UNIQUE,
     phone VARCHAR NOT NULL,
-    pec VARCHAR NOT NULL,
-    address JSON NOT NULL,
-    CONSTRAINT valid_address CHECK (
-        (json_typeof(address) = 'object')
-        AND (json_typeof(address -> 'street') = 'string')
-        AND (json_typeof(address -> 'postalCode') = 'string')
-        AND (json_typeof(address -> 'province') = 'string')
-    ),
+    pec VARCHAR,
+    address TEXT NOT NULL,
     fg VARCHAR,
     code VARCHAR(15),
     state VARCHAR NOT NULL DEFAULT 'In Lavorazione',
@@ -51,6 +45,8 @@ CREATE TABLE "client" (
     business_start DATE,
     cf VARCHAR(16),
     fax VARCHAR,
+    liters DECIMAL,
+    euro DECIMAL,
     auth_id INT NOT NULL REFERENCES auth(id) ON DELETE RESTRICT,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -98,32 +94,20 @@ CREATE TABLE
         created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
     );
 
+CREATE INDEX IF NOT EXISTS idx_messages_client_id ON messages (client_id);
+CREATE INDEX IF NOT EXISTS idx_messages_auth_id ON messages (auth_id);
 DROP TABLE IF EXISTS "message_ack" CASCADE;
 CREATE TABLE message_ack (
-    msg_id INT REFERENCES messages(id) ON DELETE CASCADE,
-    client_id INT REFERENCES client(id) ON DELETE CASCADE,
-    auth_id INT REFERENCES auth(id) ON DELETE CASCADE, -- auth_id is set only when the message is to be acked by agency
+    msg_id INT REFERENCES messages (id) ON DELETE CASCADE,
+    client_id INT REFERENCES client (id) ON DELETE CASCADE,
+    auth_id INT REFERENCES auth (id) ON DELETE CASCADE, -- auth_id is set only when the message is to be acked by agency
     ack BOOLEAN DEFAULT FALSE,
     ack_at TIMESTAMPTZ DEFAULT NULL
 
 );
-
-
-DROP TABLE IF EXISTS work_with_us;
-CREATE TABLE work_with_us (
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    surname TEXT NOT NULL,
-    business TEXT NOT NULL,
-    vat TEXT NOT NULL,
-    email TEXT NOT NULL,
-    phone TEXT NOT NULL,
-    invite_sent BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the record was created
-    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP -- Timestamp for the last update
-);
-
-DROP TABLE IF EXISTS "email_queue" CASCADE;
+CREATE INDEX IF NOT EXISTS idx_message_ack_client_id ON message_ack (client_id);
+CREATE INDEX IF NOT EXISTS idx_message_ack_auth_id ON message_ack (auth_id);
+DROP TABLE IF EXISTS email_queue CASCADE;
 CREATE TABLE email_queue (
     id SERIAL PRIMARY KEY, -- Unique identifier for each email
     from_address VARCHAR(255) NOT NULL, -- Sender's email address
@@ -143,14 +127,10 @@ CREATE TABLE email_queue (
 );
 
 -- Indexes for faster querying
-CREATE INDEX idx_email_status ON email_queue (status);
-CREATE INDEX idx_email_to_address ON email_queue (to_address);
+CREATE INDEX IF NOT EXISTS idx_email_status ON email_queue (status);
+CREATE INDEX IF NOT EXISTS idx_email_to_address ON email_queue (to_address);
+CREATE INDEX IF NOT EXISTS idx_email_subject ON email_queue (subject);
 
--- SELECT * FROM email_queue WHERE status = 'pending' AND retry_count < 5;
--- UPDATE email_queue SET status = 'sent', sent_at = NOW() WHERE id = ?;
-/* UPDATE email_queue 
-SET status = 'failed', retry_count = retry_count + 1, error_message = ? 
-WHERE id = ?; */
 
 
 -- END TABLES SECTION

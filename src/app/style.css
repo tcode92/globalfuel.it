@@ -25,27 +25,18 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
 } */
-.text-background {
-  display: inline-block; /* Fits only around the text */
-  padding: 10px 20px;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(0, 60, 255, 0.6) 10%,
-    rgba(0, 60, 255, 0.2) 30%,
-    rgba(0, 60, 255, 0) 70%
-  );
-  border-radius: 50%; /* Makes the gradient into an oval shape */
-  z-index: -1;
+.tbg {
+  background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(45deg,rgba(var(--blue), 1) 30%, rgba(var(--orange), 1) 70%);
 }
 
 .cardlogo {
-  display: block;
-  max-height: 350px;
   position: relative;
   width: 100%;
-  max-width: 400px;
+  height: 100%;
+  max-height: 40vh;
   object-fit: contain;
-  margin-bottom: 3rem;
   padding: 0rem;
   opacity: 0;
 }
@@ -57,7 +48,7 @@ body {
 
 @keyframes slide-in-fwd-top {
   0% {
-    transform: translateZ(-1400px) translateY(-800px);
+    transform: translateZ(-1400px) translateY(50px);
     opacity: 0;
   }
   100% {

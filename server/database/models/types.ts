@@ -59,7 +59,7 @@ export namespace models {
       email: string;
       vat: string;
       phone: string;
-      address: ClientAddress;
+      address: string;
       pec: string;
       fg: ClientFG;
       state?: ClientState;
@@ -68,6 +68,8 @@ export namespace models {
       business_start?: string | Date | null;
       cf?: string | null;
       fax?: string | null;
+      liters?: number | null;
+      amount?: number | null;
     };
     export type ClientTable = {
       id: number;
@@ -82,7 +84,7 @@ export namespace models {
       vat: string;
     };
     export type FullClient = {
-      address: ClientAddress;
+      address: string;
       auth_id: number;
       code: string | null;
       business: string;
@@ -91,9 +93,9 @@ export namespace models {
       created_at: string;
       email: string;
       fax: string | null;
-      fg: string;
+      fg: string | null;
       id: number;
-      pec: string;
+      pec: string | null;
       phone: string;
       sdi: string | null;
       state: ClientState;
@@ -101,6 +103,8 @@ export namespace models {
       updated_at: string;
       vat: string;
       agency_name: string;
+      amount: string | null;
+      liters: string | null;
       docs: {
         [key in FileType]: {
           id: number;

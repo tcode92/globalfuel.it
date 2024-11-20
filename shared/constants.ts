@@ -155,3 +155,39 @@ export function formatDate(date: string | Date) {
     second: "2-digit",
   });
 }
+
+export function generatePassword(length: number = 12): string {
+  // Define the character sets
+  const upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lowerCase = "abcdefghijklmnopqrstuvwxyz";
+  const numbers = "0123456789";
+  const specialCharacters = "(;.:-_!'\"£$%&()=?^§][><@°#)";
+
+  // Ensure the password includes at least one of each required character type
+  const requiredCharacters = [
+    upperCase[Math.floor(Math.random() * upperCase.length)],
+    lowerCase[Math.floor(Math.random() * lowerCase.length)],
+    numbers[Math.floor(Math.random() * numbers.length)],
+    specialCharacters[Math.floor(Math.random() * specialCharacters.length)],
+  ];
+
+  // Fill the remaining length with random characters from all sets
+  const allCharacters = upperCase + lowerCase + numbers + specialCharacters;
+  while (requiredCharacters.length < length) {
+    requiredCharacters.push(
+      allCharacters[Math.floor(Math.random() * allCharacters.length)]
+    );
+  }
+
+  // Shuffle the password to randomize the order of characters
+  for (let i = requiredCharacters.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [requiredCharacters[i], requiredCharacters[j]] = [
+      requiredCharacters[j],
+      requiredCharacters[i],
+    ];
+  }
+
+  // Join the characters into a single string
+  return requiredCharacters.join("");
+}

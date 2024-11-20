@@ -37,10 +37,11 @@ export const useMessagetStore = create<MessageStore>((set, get) => ({
     });
   },
   addMessage: (msg) => {
+    const newMessages = [msg, ...get().messages];
     set({
-      messages: [msg, ...get().messages],
-      toAck: get().toAck + 1,
-    })
+      messages: newMessages,
+      toAck: newMessages.length,
+    });
   },
   ackAllClientMessages: (clientId: number) => {
     let total = 0;
@@ -52,7 +53,7 @@ export const useMessagetStore = create<MessageStore>((set, get) => ({
       return true;
     });
     set({
-      toAck: get().toAck - total,
+      toAck: newList.length,
       messages: newList,
     });
   },

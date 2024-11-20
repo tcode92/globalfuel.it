@@ -27,7 +27,7 @@ export const createWorkWithUsService = async (data: CreateWorkWithUsInput) => {
         },
         template: "new-work-with-us",
         to: member.email,
-        from: "notifiche@globalfuel.it",
+        from: "noreplay@globalfuel.it",
       });
     }
   });

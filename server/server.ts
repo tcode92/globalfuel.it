@@ -73,7 +73,6 @@ fastify.addContentTypeParser(
     return result;
   }
 );
-
 type SSEClient = Map<number, { role: ROLES; conn: ServerResponse<IncomingMessage>[] }>;
 fastify.decorate<SSEClient>("ssec", new Map());
 
@@ -119,7 +118,7 @@ export async function startServer() {
     // public routes are registred here before auth middleware
     await fastify.register(publicRouter, { prefix: "/api" });
     await fastify.register(privateRouter, { prefix: "/api" });
-    await fastify.register(mailTrackerRouter, { prefix: "/m/t" });
+    await fastify.register(mailTrackerRouter, { prefix: "/m" });
     await fastify.after();
     const PORT = +(process.argv[2] ?? process.env.PORT ?? 3001);
     const serverConf =

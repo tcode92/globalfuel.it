@@ -123,7 +123,8 @@ export const WorkWithUsForm = () => {
               value={consent ? "on" : "off"}
               onCheckedChange={() => setConsent((prev) => !prev)}
             />{" "}
-            Dichiaro di aver letto l&apos;informativa privacy.
+            Autorizzo il trattamento dei dati ai sensi del D. Lgs. 30/06/03 n°
+            196 e del GDPR (UE 2016 679).
           </Label>
         </InputWrapper>
       </div>

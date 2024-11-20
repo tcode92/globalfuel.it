@@ -8,12 +8,12 @@ export const connect = () => {
 
   sse.addEventListener("chat", (ev) => {
     const msg = JSON.parse(ev.data) as models.message.Message;
-    if (msg.ack === false) {
-      useMessagetStore.getState().addMessage(msg);
-    }
     const newEvent = new CustomEvent("chat", {
       detail: msg,
     });
     window.dispatchEvent(newEvent);
+    if (msg.ack === false) {
+      useMessagetStore.getState().addMessage(msg);
+    }
   });
 };

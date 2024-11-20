@@ -104,13 +104,6 @@ export function NoLoginHeader() {
         </Link>
         <div className="flex gap-4 items-center">
           <LinkButton
-            href={"/lavora-con-noi"}
-            variant={"none"}
-            className="text-blux font-semibold p-0 px-1 m-0 text-base"
-          >
-            Lavora con noi
-          </LinkButton>
-          <LinkButton
             href={"/accedi"}
             variant={"none"}
             className="text-blux font-semibold p-0 px-1 m-0 text-base"

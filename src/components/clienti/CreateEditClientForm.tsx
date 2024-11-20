@@ -1,40 +1,28 @@
+import { client } from "@/api/clients";
+import { getFormDataFromEvent } from "@/utils/formdata";
 import {
   CF_REGEX,
+  CLIENT_FG,
   EMAIL_REGEX,
   PHONE2_REGEX,
-  POSTALCODE_REGEX,
   SDI_REGEX,
   VAT_REGEX,
   isEmpty,
   isValidDate,
   isValidPhone,
-  transformDate,
+  transformDate
 } from "@constants";
-import { getFormDataFromEvent } from "@/utils/formdata";
+import { models } from "@types";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import InputError from "../customComponents/InputError";
 import InputWrapper from "../customComponents/InputWrapper";
+import { IR } from "../customComponents/RequiredMark";
 import { SelectCustom } from "../customComponents/Select";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { client } from "@/api/clients";
-import { models } from "@types";
 
-export const FG: models.client.FullClient["fg"][] = [
-  "assoc.",
-  "coop",
-  "ditta individuale",
-  "libero professionista",
-  "onlus e CRI",
-  "pubblica amministrazione",
-  "sas",
-  "snc",
-  "spa",
-  "srl",
-  "srls",
-];
 type OptionsFlags<Type> = {
   [Property in keyof Type]?: Type[Property] extends object
     ? OptionsFlags<Type[Property]> // If the property is an object, recursively apply OptionsFlags
@@ -44,9 +32,7 @@ export type ClientErrors = OptionsFlags<models.client.FullClient>;
 export default function CreateEditClientForm({
   data,
   onValidData,
-  isPublic,
 }: {
-  isPublic?: boolean;
   data?: Partial<models.client.FullClient>;
   /**
    * This allow to handle the submission of the data externaly
@@ -61,30 +47,26 @@ export default function CreateEditClientForm({
 }) {
   const router = useRouter();
   const [error, setError] = useState<ClientErrors>({});
-  function removeErr<T extends keyof ClientErrors>(
-    err: T,
-    overrideVal?: T extends "address" ? ClientErrors[T] : never
-  ) {
+  const [loading, setLoading] = useState(false);
+  function removeErr<T extends keyof ClientErrors>(err: T) {
     setError((prev) => {
-      if (err === "address") {
-      }
       return {
         ...prev,
-        [err]:
-          err === "address" && overrideVal
-            ? { ...prev["address"], ...overrideVal }
-            : undefined,
+        [err]: undefined,
       };
     });
   }
   async function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (loading) return;
+    setLoading(true);
     setError({});
     const formData = getFormDataFromEvent<models.client.FullClient>(e);
     // validate form
     const errs = validateClient(formData);
     if (Object.keys(errs).length > 0) {
       setError(errs);
+      setLoading(false);
       return;
     } else {
       // this is used to handle the submission of the form externally.
@@ -94,6 +76,7 @@ export default function CreateEditClientForm({
         if (typeof errors === "object") {
           setError(errors);
         }
+        setLoading(false);
         return;
       }
       // submitform
@@ -107,8 +90,10 @@ export default function CreateEditClientForm({
       } else {
         if (response?.error && response.error.fields) {
           setError(response.error.fields);
+          setLoading(false);
         } else {
           error.display();
+          setLoading(false);
         }
       }
     }
@@ -119,11 +104,10 @@ export default function CreateEditClientForm({
       className="flex flex-col md:grid md:grid-cols-2 gap-4 py-4 w-full"
       onSubmit={handleFormSubmit}
     >
-      {/* code */}
       {/* business */}
       <InputWrapper>
         <Label htmlFor="business" className={labelClass}>
-          Ragione sociale*
+          Ragione sociale <IR />
         </Label>
         <Input
           id="business"
@@ -138,7 +122,7 @@ export default function CreateEditClientForm({
       {/* vat */}
       <InputWrapper>
         <Label htmlFor="vat" className={labelClass}>
-          P.Iva*
+          P.Iva <IR />
         </Label>
         <Input
           id="vat"
@@ -150,25 +134,11 @@ export default function CreateEditClientForm({
         />
         <InputError>{error.vat}</InputError>
       </InputWrapper>
-      {/* business_start */}
-      <InputWrapper>
-        <Label htmlFor="business_start" className={labelClass}>
-          Data inizio attività
-        </Label>
-        <Input
-          id="business_start"
-          name="business_start"
-          defaultValue={transformDate(data?.business_start)}
-          onChange={() => {
-            removeErr("business_start");
-          }}
-        />
-        <InputError>{error.business_start}</InputError>
-      </InputWrapper>
+
       {/* email */}
       <InputWrapper>
         <Label htmlFor="email" className={labelClass}>
-          Email*
+          Email <IR />
         </Label>
         <Input
           id="email"
@@ -184,7 +154,7 @@ export default function CreateEditClientForm({
       {/* phone */}
       <InputWrapper>
         <Label htmlFor="phone" className={labelClass}>
-          Telefono*
+          Telefono <IR />
         </Label>
         <Input
           id="phone"
@@ -195,6 +165,36 @@ export default function CreateEditClientForm({
           }}
         />
         <InputError>{error.phone}</InputError>
+      </InputWrapper>
+      {/* Address  */}
+      <InputWrapper>
+        <Label htmlFor="address" className={labelClass}>
+          Indirizzo <IR />
+        </Label>
+        <Input
+          id="address"
+          name="address"
+          defaultValue={data?.address ?? undefined}
+          onChange={() => {
+            removeErr("address");
+          }}
+        />
+        <InputError>{error.address}</InputError>
+      </InputWrapper>
+      {/* business_start */}
+      <InputWrapper>
+        <Label htmlFor="business_start" className={labelClass}>
+          Data inizio attività
+        </Label>
+        <Input
+          id="business_start"
+          name="business_start"
+          defaultValue={transformDate(data?.business_start)}
+          onChange={() => {
+            removeErr("business_start");
+          }}
+        />
+        <InputError>{error.business_start}</InputError>
       </InputWrapper>
       {/* fax */}
       <InputWrapper>
@@ -214,7 +214,7 @@ export default function CreateEditClientForm({
       {/* pec */}
       <InputWrapper>
         <Label htmlFor="pec" className={labelClass}>
-          PEC*
+          PEC
         </Label>
         <Input
           id="pec"
@@ -244,12 +244,12 @@ export default function CreateEditClientForm({
       {/* FG */}
       <InputWrapper>
         <Label htmlFor="fg" className={labelClass}>
-          Forma giuridica*
+          Forma giuridica
         </Label>
         <SelectCustom
           name="fg"
           id="fg"
-          values={FG}
+          values={CLIENT_FG}
           defaultValue={data?.fg ?? ""}
           placeHolder="Seleziona forma giuridica"
           onChange={() => {
@@ -258,65 +258,43 @@ export default function CreateEditClientForm({
         />
         <InputError>{error.fg}</InputError>
       </InputWrapper>
-      {/* Address street */}
+      <div className="col-span-2 w-full font-bold text-blux-600">Consumi</div>
       <InputWrapper>
-        <Label htmlFor="address.street" className={labelClass}>
-          Indirizzo*
+        <Label htmlFor="phone" className={labelClass}>
+          Litri/mese
         </Label>
         <Input
-          id="address.street"
-          name="address.street"
-          defaultValue={data?.address?.street ?? undefined}
+          id="liters"
+          name="liters"
+          type="number"
           onChange={() => {
-            removeErr("address", {
-              street: undefined,
-            });
+            removeErr("liters");
           }}
         />
-        <InputError>{error.address?.street}</InputError>
+        <InputError>{error.liters}</InputError>
       </InputWrapper>
-      {/* Address cap */}
       <InputWrapper>
-        <Label htmlFor="address.postalCode" className={labelClass}>
-          CAP*
+        <Label htmlFor="phone" className={labelClass}>
+          Euro/mese
         </Label>
         <Input
-          id="address.postalCode"
-          name="address.postalCode"
-          defaultValue={data?.address?.postalCode ?? undefined}
+          id="amount"
+          name="amount"
+          type="number"
           onChange={() => {
-            removeErr("address", {
-              postalCode: undefined,
-            });
+            removeErr("amount");
           }}
         />
-        <InputError>{error.address?.postalCode}</InputError>
-      </InputWrapper>
-      {/* Address province */}
-      <InputWrapper>
-        <Label htmlFor="address.province" className={labelClass}>
-          Provincia*
-        </Label>
-        <Input
-          id="address.province"
-          name="address.province"
-          defaultValue={data?.address?.province ?? undefined}
-          onChange={() => {
-            removeErr("address", {
-              province: undefined,
-            });
-          }}
-        />
-        <InputError>{error.address?.province}</InputError>
+        <InputError>{error.amount}</InputError>
       </InputWrapper>
       <div className="grid grid-cols-4 gap-4 mt-2 col-span-2">
         <Button
           type="submit"
           className="col-start-4 justify-self-end self-end"
           variant={"blue"}
+          disabled={loading}
         >
-          {isPublic && "Invia richiesta"}
-          {!isPublic && <>{data ? " Salva" : "Nuovo"}</>}
+          {data ? " Salva" : "Nuovo"}
         </Button>
       </div>
     </form>
@@ -324,16 +302,7 @@ export default function CreateEditClientForm({
 }
 function validateClient(client: Partial<models.client.FullClient>) {
   let errors: ClientErrors = {};
-  function addAddressErr(
-    key: keyof models.client.FullClient["address"],
-    err: string
-  ) {
-    if (errors.address) {
-      errors.address[key] = err;
-    } else {
-      errors.address = { [key]: err };
-    }
-  }
+
   if (isEmpty(client.business)) {
     errors.business = "Ragione sociale mancante.";
   }
@@ -345,9 +314,6 @@ function validateClient(client: Partial<models.client.FullClient>) {
   }
   if (!isEmpty(client.email) && !EMAIL_REGEX.test(client.email?.trim() || "")) {
     errors.email = "Email non valida.";
-  }
-  if (isEmpty(client.pec)) {
-    errors.pec = "PEC mancante.";
   }
   if (!isEmpty(client.pec) && !EMAIL_REGEX.test(client.pec?.trim() || "")) {
     errors.pec = "PEC non valida.";
@@ -370,29 +336,11 @@ function validateClient(client: Partial<models.client.FullClient>) {
   ) {
     errors.fax = "Fax non valido.";
   }
-  /* if (isEmpty(client.sdi)) {
-    errors.sdi = "Codice SDI mancante.";
-  } */
-  if (isEmpty(client.fg)) {
-    errors.fg = "Seleziona forma giuridica.";
-  }
   if (!isEmpty(client.sdi) && !SDI_REGEX.test(client.sdi || "")) {
     errors.sdi = "Codice SDI non valido.";
   }
-  if (isEmpty(client.address?.street)) {
-    addAddressErr("street", "Indirizzo mancante.");
-  }
-  if (isEmpty(client.address?.postalCode)) {
-    addAddressErr("postalCode", "CAP mancante.");
-  }
-  if (
-    !isEmpty(client.address?.postalCode) &&
-    !POSTALCODE_REGEX.test(client.address?.postalCode.replaceAll(" ", "") || "")
-  ) {
-    addAddressErr("postalCode", "CAP non valido.");
-  }
-  if (isEmpty(client.address?.province)) {
-    addAddressErr("province", "Provincia mancante.");
+  if (isEmpty(client.address)) {
+    errors.address = "Indirizzo mancante.";
   }
   if (!isEmpty(client.business_start) && !isValidDate(client.business_start)) {
     errors.business_start = "Data non valida.";
