@@ -40,3 +40,4 @@ Docker/nginx/globalfuel.*
 dhparam.pem
 costs.md
 *.env*
+files
