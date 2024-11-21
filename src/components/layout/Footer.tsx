@@ -12,8 +12,15 @@ export default function Footer() {
           <p>Petrol Service S.R.L.</p>
           {/* <p>Via Roma 9 Galleria del corso</p>
           <p>89013 Gioia Tauro (RC)</p> */}
-          <p>Backoffice: 3276125718</p>
-          <p>Agente Francesco Piccolo: 3486819776</p>
+          <p>
+            Email: <a href="mailto:info@globalfuel.it">info@globalfuel.it</a>
+          </p>
+          <p>
+            Backoffice: <a href="tel:+393276125718">3276125718</a>
+          </p>
+          <p>
+            Agente Francesco Piccolo: <a href="tel:+393486819776">3486819776</a>
+          </p>
         </div>
         <div className="flex flex-col items-center gap-4">
           <div className="flex gap-4">

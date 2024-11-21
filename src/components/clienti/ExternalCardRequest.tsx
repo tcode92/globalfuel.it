@@ -87,6 +87,7 @@ export default function ExternalCardReqForm({
             id="business"
             name="business"
             autoComplete="organization"
+            placeholder="Inserisci ragione sociale"
             onChange={() => {
               removeErr("business");
             }}
@@ -96,11 +97,12 @@ export default function ExternalCardReqForm({
         {/* vat */}
         <InputWrapper>
           <Label htmlFor="vat" className={labelClass}>
-            P.Iva <IR />
+            P. IVA <IR />
           </Label>
           <Input
             required
             id="vat"
+            placeholder="Inserisci Partita IVA"
             name="vat"
             onChange={() => {
               removeErr("vat");
@@ -115,6 +117,7 @@ export default function ExternalCardReqForm({
           </Label>
           <Input
             id="address"
+            placeholder="Inserisci inderizzo sede"
             name="address"
             onChange={() => {
               removeErr("address");
@@ -131,6 +134,7 @@ export default function ExternalCardReqForm({
             id="email"
             name="email"
             type="email"
+            placeholder="Inserisci email"
             required
             autoComplete="email"
             onChange={() => {

@@ -1,5 +1,4 @@
 import { HighLightElement } from "@/components/customComponents/HighlightElement";
-import { IRStatic } from "@/components/customComponents/RequiredMark";
 import { CardForm } from "@/components/forms/ExternalCardForm";
 import { HomePageImg } from "@/components/layout/Header";
 import { Metadata } from "next";

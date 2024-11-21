@@ -39,7 +39,7 @@ httpClass.onRedirect = async (url) => {
     reportError(e, "REDIRECTERR:" + url);
   }
 };
-async function reportError(err: unknown, url: string) {
+export async function reportError(err: unknown, url: string) {
   let body: Record<string, any> = {
     url: url,
     clientUrl: window.location.toString(),
