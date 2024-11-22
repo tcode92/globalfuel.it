@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /accedi
+Disallow: /password-dimenticata
+Disallow: /reimposta-password
+Allow: /
